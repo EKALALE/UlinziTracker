@@ -1,0 +1,74 @@
+{% extends "UlinziTracker/index.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<head>
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<style>
+  body {
+    background: #f8f9fa;
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+  .signin-container {
+    max-width: 500px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  legend {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #343a40;
+  }
+  .btn-success {
+    width: 100%;
+  }
+  .icon {
+    font-size: 50px;
+    color: #28a745;
+    margin-bottom: 15px;
+  }
+</style>
+
+<div class="container">
+  {% for message in messages %}
+    <div{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+      <a class="close" data-dismiss="alert" href="#">&times;</a>
+      {{ message }}
+    </div>
+  {% endfor %}
+
+  <div class="signin-container text-center">
+    {% if user.is_authenticated %}
+      <h3>You are already logged in. Please logout to switch accounts.</h3>
+    {% else %}
+      <i class="fas fa-user-shield icon"></i>
+      <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+          <legend class="border-bottom mb-4">Log In to UlinziTracker</legend>
+          {{ form|crispy }}
+        </fieldset>
+        <div class="form-group">
+          <button class="btn btn-success" type="submit">Login</button>
+        </div>
+      </form>
+      <div class="border-top pt-3">
+        <small>
+          Need an account? <a class="ml-2" href="{% url 'register' %}">Register Now</a>
+          <div class="text-muted">
+            <a href="{% url 'password_reset' %}">Forgot Password?</a>
+          </div>
+        </small>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock content %}

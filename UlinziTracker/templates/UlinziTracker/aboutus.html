@@ -1,0 +1,53 @@
+{% extends "UlinziTracker/index.html" %}
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+{% block content %}
+<style>
+  body {
+    background-color: #ffffff !important;
+  }
+  h1, h2, h3 {
+    color: rgb(116, 116, 116);
+    padding: 10px;
+  }
+  img {
+    width: 100%;
+    height: 100%;
+  }
+  .card {
+    border: #007bff !important;
+  }
+  a {
+    color: black;
+    font-weight: bold;
+    padding: 1px;
+  }
+  #middle {
+    left: 0;
+    margin-top: -100px;
+    position: absolute;
+    top: 50%;
+    width: 100%;
+  }
+</style>
+
+<br>
+{% load static %}
+
+<center>
+  <h2>About the Developer</h2>
+  <h3><strong>UlinziTracker</strong> is a community safety platform developed and customized by <strong>Philip</strong>.</h3>
+  <p style="max-width: 700px; text-align: center;">
+    This project was built using <a href="https://www.djangoproject.com/">Django</a> and reflects a personal commitment to empowering communities through technology. UlinziTracker enables real-time incident reporting, secure communication, and data-driven decision-making for safer neighborhoods.
+    <br><br>
+    Every feature — from role-based access to incident analytics — was thoughtfully designed to bridge the gap between residents and security services. This is a hands-on, purpose-driven solution created with scalability, simplicity, and impact in mind.
+  </p>
+</center>
+
+{% endblock %}

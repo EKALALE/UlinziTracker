@@ -1,0 +1,71 @@
+{% extends "UlinziTracker/index.html" %}
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+{% block content %}
+<style>
+  body {
+    background-color: #ffffff !important;
+  }
+  img {
+    width: 100%;
+    height: 100%;
+  }
+  .card {
+    border: #007bff !important;
+  }
+</style>
+
+{% load static %}
+
+<div class="card bg-info text-white">
+  <div class="ml-3">
+    <p style="color:white; font-size:40px;"> <b>About UlinziTracker</b></p>
+    <p style="color:white; text-align:justify;">
+      <strong>UlinziTracker</strong> is an innovative web application designed to enhance community safety and streamline incident reporting. It empowers residents to report suspicious activities, emergencies, or disturbances in real time, while enabling security personnel and administrators to monitor, respond, and analyze incidents efficiently.
+      <br><br>
+      The platform features secure user authentication, incident categorization, automated notifications, and a data-driven dashboard for visualizing trends and response times. UlinziTracker bridges the gap between communities and security services, fostering safer neighborhoods through collective vigilance and technology.
+    </p>
+  </div>
+  <br>
+</div>
+
+<center>
+  <br><br><br>
+  <div class="row d-flex justify-content-center">
+    <div class="col-sm-3 col-sm-pull-4">
+      <div class="card text-dark" style="width: 18rem;">
+        <img src="{% static 'UlinziTracker/img/report.png' %}" class="img-rounded" alt="Report Incident">
+        <div class="card-body">
+          <p class="card-text">Report Incidents Instantly</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-3 col-sm-pull-4">
+      <div class="card text-dark" style="width: 18rem;">
+        <img src="{% static 'UlinziTracker/img/respond.png' %}" class="img-rounded" alt="Respond Quickly">
+        <div class="card-body">
+          <p class="card-text">Track & Respond to Alerts</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-3">
+      <div class="card text-dark" style="width: 18rem;">
+        <img src="{% static 'UlinziTracker/img/stats.png' %}" class="img-rounded" alt="Incident Stats">
+        <div class="card-body">
+          <p class="card-text">Analyze Safety Trends</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br><br><br><br><br>
+</center>
+
+{% endblock %}

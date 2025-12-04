@@ -1,0 +1,75 @@
+{% extends "UlinziTracker/index.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<head>
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<style>
+  body {
+    background: #f8f9fa; 
+  }
+  .jbg {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+  }
+  .card {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border: none;
+    transition: transform 0.2s;
+    margin: 20px;
+  }
+  .card:hover {
+    transform: scale(1.05);
+  }
+  .icon {
+    font-size: 60px;
+    color: #007bff;
+    margin: 20px 0;
+  }
+  .btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+</style>
+
+<div class="jumbotron text-center jbg">
+  <h1 style="color:#343a40"><strong>UlinziTracker</strong></h1>
+  <p style="color:#6c757d">Secure access to your community safety dashboard</p> 
+</div>
+
+<center>
+  <div class="row d-flex justify-content-center">
+
+    <!-- Resident/Security Login -->
+    <div class="col-sm-3">
+      <div class="card mx-auto">
+        <div class="card-body text-center">
+          <i class="fas fa-user-shield icon"></i>
+          <h5 class="card-title">Resident / Security Login</h5>
+          <p class="card-text">Access your account to report incidents or track alerts.</p>
+          <a href="/signin/" class="btn btn-primary">Login</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Login -->
+    <div class="col-sm-3">
+      <div class="card mx-auto">
+        <div class="card-body text-center">
+          <i class="fas fa-user-cog icon" style="color:#dc3545;"></i>
+          <h5 class="card-title">Admin Login</h5>
+          <p class="card-text">Manage users, incidents, and system analytics.</p>
+          <a href="/admin/" class="btn btn-danger">Admin Login</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</center>
+
+{% endblock content %}

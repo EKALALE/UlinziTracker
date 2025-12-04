@@ -1,0 +1,149 @@
+{% extends "UlinziTracker/index.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>UlinziTracker Dashboard</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="{% static 'UlinziTracker/extra/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'UlinziTracker/css/simple-sidebar.css' %}" rel="stylesheet">
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<div class="d-flex" id="wrapper">
+
+  <!-- Sidebar -->
+  <div class="bg-light border-right" id="sidebar-wrapper">
+    <div class="sidebar-heading text-primary font-weight-bold">
+      <i class="fas fa-shield-halved"></i> UlinziTracker
+    </div>
+    <div class="list-group list-group-flush">
+      {% if user.is_authenticated %}
+        <a href="/dashboard/" class="list-group-item list-group-item-action bg-light">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <a href="/incidents/" class="list-group-item list-group-item-action bg-light">
+          <i class="fas fa-bullhorn"></i> Report Incident
+        </a>
+        <a href="/incidents/pending/" class="list-group-item list-group-item-action bg-light">
+          <i class="fas fa-hourglass-half"></i> Pending Incidents
+        </a>
+        <a href="/incidents/resolved/" class="list-group-item list-group-item-action bg-light">
+          <i class="fas fa-check-circle"></i> Resolved Incidents
+        </a>
+        <a href="/profile/" class="list-group-item list-group-item-action bg-light">
+          <i class="fas fa-user"></i> Profile
+        </a>
+        <a href="/logout/" class="list-group-item list-group-item-action bg-light">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      {% endif %}
+    </div>
+  </div>
+  <!-- /#sidebar-wrapper -->
+
+  <!-- Page Content -->
+  <div id="page-content-wrapper">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+      <button class="btn btn-primary" id="menu-toggle">Toggle Menu</button>
+    </nav>
+
+    <br>
+    <!-- Profile Section -->
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <h4>Your Profile</h4>
+          <hr>
+          {% if messages %}
+            <ul>
+              {% for message in messages %}
+                <div{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+                  <a class="close" data-dismiss="alert" href="#">&times;</a>
+                  {{ message }}
+                </div>
+              {% endfor %}
+            </ul>
+          {% endif %}
+          <form method="post">
+            {% csrf_token %}
+            {{ p_form|crispy }}
+            <div class="form-row">
+              {{ profile_update_form|crispy }}
+            </div>
+            <button type="submit" class="btn btn-primary m-2">Update Profile</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Incident Analytics Section -->
+    <div class="col-md-12 mt-4">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h5>Incident Analytics</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <!-- Pie Chart: Incident Status -->
+            <div class="col-md-6">
+              <canvas id="incidentStatusChart"></canvas>
+            </div>
+            <!-- Bar Chart: Incident Categories -->
+            <div class="col-md-6">
+              <canvas id="incidentCategoryChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Example data - replace with dynamic values from your backend
+  const incidentStatusData = {
+    labels: ['Pending', 'In Progress', 'Resolved'],
+    datasets: [{
+      data: [12, 7, 15],
+      backgroundColor: ['#f39c12', '#3498db', '#2ecc71']
+    }]
+  };
+
+  const incidentCategoryData = {
+    labels: ['Suspicious Activity', 'Emergency', 'Disturbance', 'Other'],
+    datasets: [{
+      label: 'Incidents',
+      data: [5, 8, 6, 3],
+      backgroundColor: '#007bff'
+    }]
+  };
+
+  new Chart(document.getElementById('incidentStatusChart'), {
+    type: 'pie',
+    data: incidentStatusData,
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
+
+  new Chart(document.getElementById('incidentCategoryChart'), {
+    type: 'bar',
+    data: incidentCategoryData,
+    options: { responsive: true, scales: { y: { beginAtZero: true } } }
+  });
+
+  // Sidebar toggle
+  $("#menu-toggle").click(function(e) {
+    e.preventDefault();
+    $("#wrapper").toggleClass("toggled");
+  });
+</script>
+
+{% endblock content %}

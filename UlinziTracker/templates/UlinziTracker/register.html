@@ -1,0 +1,56 @@
+{% extends "UlinziTracker/index.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<style>
+  body {
+    background: #f8f9fa;
+  }
+
+  .register-container {
+    max-width: 600px;
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  legend {
+    font-size: 1.5rem;
+    color: #343a40;
+    font-weight: bold;
+  }
+
+  .btn-info {
+    width: 100%;
+  }
+
+  .border-top {
+    margin-top: 20px;
+    padding-top: 10px;
+  }
+</style>
+
+<div class="register-container">
+  <div class="content-section">
+    <form method="POST">
+      <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Create Your UlinziTracker Account</legend>
+        {% csrf_token %}
+        {{ form|crispy }}
+        {{ profile_form|crispy }}
+      </fieldset>
+      <div class="form-group">
+        <button class="btn btn-info" type="submit">Register</button>
+      </div>
+    </form>
+    <div class="border-top pt-3 text-center">
+      <small class="text-muted">
+        Already have an account? <a class="ml-2" href="{% url 'login' %}">Sign In</a>
+      </small>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

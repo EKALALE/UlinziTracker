@@ -1,0 +1,81 @@
+{% extends "UlinziTracker/index.html" %}
+{% load static %}
+{% block content %}
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<style>
+  body {
+    background-color: #ffffff !important;
+  }
+  .card {
+    border: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    margin: 20px;
+  }
+  .card:hover {
+    transform: scale(1.05);
+  }
+  .card-body {
+    text-align: center;
+    font-weight: 500;
+  }
+  .icon {
+    font-size: 60px;
+    color: #007bff;
+    margin: 20px 0;
+  }
+</style>
+
+<center>
+  <br><br><br>
+  <p style="color:#343a40; font-size:40px;"> <b>Welcome to UlinziTracker</b></p>
+  <p style="color:#6c757d; font-size:18px; max-width:700px;">
+    A community safety platform designed to empower residents and security teams with real-time incident reporting, rapid response, and actionable insights.
+  </p>
+
+  <div class="row d-flex justify-content-center mt-4">
+
+    <!-- Report Incidents -->
+    <div class="col-sm-3">
+      <div class="card text-dark" style="width: 18rem;">
+        <div class="card-body">
+          <i class="fas fa-bullhorn icon"></i>
+          <p class="card-text">Report Incidents Instantly</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Respond to Alerts -->
+    <div class="col-sm-3">
+      <div class="card text-dark" style="width: 18rem;">
+        <div class="card-body">
+          <i class="fas fa-shield-halved icon"></i>
+          <p class="card-text">Track & Respond to Alerts</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analyze Trends -->
+    <div class="col-sm-3">
+      <div class="card text-dark" style="width: 18rem;">
+        <div class="card-body">
+          <i class="fas fa-chart-bar icon"></i>
+          <p class="card-text">Analyze Safety Trends</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <br><br><br><br><br>
+</center>
+
+{% endblock %}
