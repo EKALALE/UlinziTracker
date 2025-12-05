@@ -20,12 +20,41 @@
     <div class="sidebar-heading"><strong>UlinziTracker</strong></div>
     <div class="list-group list-group-flush">
       {% if user.is_authenticated %}
-        <a href="#" class="list-group-item list-group-item-action active">Welcome: {{ user.username }}</a>
-        <a href="/dashboard/" class="list-group-item list-group-item-action">Profile</a>
+        <a href="#" class="list-group-item list-group-item-action active">
+          Welcome: {{ user.username }} ({{ user.profile.role|title }})
+        </a>
+        <a href="{% url 'UlinziTracker:dashboard' %}" class="list-group-item list-group-item-action">Profile</a>
         <a href="/password/" class="list-group-item list-group-item-action">Reset Password</a>
-        <a href="/incidents/" class="list-group-item list-group-item-action">Report Incident</a>
-        <a href="/incidents/pending/" class="list-group-item list-group-item-action">Pending Incidents</a>
-        <a href="/incidents/resolved/" class="list-group-item list-group-item-action">Resolved Incidents</a>
+
+        {% if user.profile.role == 'resident' %}
+          <a href="/incidents/" class="list-group-item list-group-item-action">Report Incident</a>
+          <a href="/incidents/pending/" class="list-group-item list-group-item-action">My Pending Incidents</a>
+          <a href="/incidents/resolved/" class="list-group-item list-group-item-action">My Resolved Incidents</a>
+        {% endif %}
+
+        {% if user.profile.role == 'officer' %}
+          <a href="/incidents/pending/" class="list-group-item list-group-item-action">Pending Incidents</a>
+          <a href="/incidents/resolved/" class="list-group-item list-group-item-action">Resolved Incidents</a>
+          <a href="/incidents/" class="list-group-item list-group-item-action">All Incidents</a>
+        {% endif %}
+
+        {% if user.profile.role == 'chief' %}
+          <a href="/incidentStats/" class="list-group-item list-group-item-action">Analytics</a>
+          <a href="/incidents/" class="list-group-item list-group-item-action">All Incidents</a>
+        {% endif %}
+
+        {% if user.profile.role == 'authority' %}
+          <a href="/incidents/" class="list-group-item list-group-item-action">Manage Reports</a>
+          <a href="/incidentStats/" class="list-group-item list-group-item-action">Analytics</a>
+        {% endif %}
+
+        {% if user.profile.role == 'admin' %}
+          <a href="/admin/" class="list-group-item list-group-item-action">Admin Dashboard</a>
+          <a href="/incidentStats/" class="list-group-item list-group-item-action">System Analytics</a>
+          <a href="/incidents/" class="list-group-item list-group-item-action">All Incidents</a>
+        {% endif %}
+
+        <a href="/logout/" class="list-group-item list-group-item-action">Logout</a>
       {% endif %}
     </div>
   </div>
@@ -52,12 +81,18 @@
             <div class="col-md-12" style="margin:10px">
               {% if messages %}
                 <ul>
-                  {% for message in messages %}
-                    <div{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
-                      <a class="close" data-dismiss="alert" href="#">&times;</a>
-                      {{ message }}
-                    </div>
-                  {% endfor %}
+       {% if messages %}
+                    {% for message in messages %}
+  <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+         {% endfor %}
+
+{% endif %}
+
                 </ul>
               {% endif %}
               <form method="post">
@@ -75,6 +110,7 @@
     </div>
 
     <!-- Incident Analytics Section -->
+    {% if user.profile.role in 'chief admin' %}
     <div class="col-md-12 mt-4">
       <div class="card">
         <div class="card-header bg-primary text-white">
@@ -94,6 +130,7 @@
         </div>
       </div>
     </div>
+    {% endif %}
 
   </div>
 </div>
@@ -101,11 +138,10 @@
 <!-- Chart.js Script -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  // Example data - replace with dynamic values from your backend
   const incidentStatusData = {
     labels: ['Pending', 'In Progress', 'Resolved'],
     datasets: [{
-      data: [12, 7, 15], // Example counts
+      data: [12, 7, 15],
       backgroundColor: ['#f39c12', '#3498db', '#2ecc71']
     }]
   };
@@ -114,36 +150,23 @@
     labels: ['Suspicious Activity', 'Emergency', 'Disturbance', 'Other'],
     datasets: [{
       label: 'Incidents',
-      data: [5, 8, 6, 3], // Example counts
+      data: [5, 8, 6, 3],
       backgroundColor: '#007bff'
     }]
   };
 
-  // Pie Chart
   new Chart(document.getElementById('incidentStatusChart'), {
     type: 'pie',
     data: incidentStatusData,
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: 'bottom' }
-      }
-    }
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
   });
 
-  // Bar Chart
   new Chart(document.getElementById('incidentCategoryChart'), {
     type: 'bar',
     data: incidentCategoryData,
-    options: {
-      responsive: true,
-      scales: {
-        y: { beginAtZero: true }
-      }
-    }
+    options: { responsive: true, scales: { y: { beginAtZero: true } } }
   });
 
-  // Sidebar toggle
   $("#menu-toggle").click(function(e) {
     e.preventDefault();
     $("#wrapper").toggleClass("toggled");

@@ -4,28 +4,32 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.core.validators import RegexValidator
 
-class Meta:
-    app_label = 'UlinziTracker'
-
+# ---------------------------
 # User Profile model
+# ---------------------------
 class Profile(models.Model):
-    ROLE_CHOICES = (
+    ROLE_CHOICES = [
+        ('resident', 'Resident'),
+        ('authority', 'Authority'),
+        ('officer', 'Officer'),
+        ('chief', 'Area Chief'),
         ('admin', 'Admin'),
-        ('user', 'User'),
-        ('security', 'Security Officer'),
-    )
+    ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='user')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='resident')
     phone_regex = RegexValidator(
-        regex=r'^\d{10,10}$', 
-        message="Phone number must be entered in the format: Up to 10 digits allowed."
+        regex=r'^\d{10}$',
+        message="Phone number must be exactly 10 digits."
     )
     contact_number = models.CharField(validators=[phone_regex], max_length=10, blank=True)
-    location = models.CharField(max_length=100, blank=True, null=True)  # optional location field
+    location = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.username} ({self.role})"
+
+    class Meta:
+        app_label = 'UlinziTracker'
 
 
 # Signal to create Profile automatically when a new User is created
@@ -35,7 +39,9 @@ def create_user_profile(sender, instance, created, **kwargs):
         Profile.objects.create(user=instance)
 
 
-# Incident/Report model for UlinziTracker
+# ---------------------------
+# Incident/Report model
+# ---------------------------
 class Incident(models.Model):
     STATUS_CHOICES = (
         ('pending', 'Pending'),
@@ -57,7 +63,16 @@ class Incident(models.Model):
     location = models.CharField(max_length=200, blank=True, null=True)
     time_reported = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-    response_time = models.DurationField(blank=True, null=True)  # optional analytics field
+    response_time = models.DurationField(blank=True, null=True)
+
+    # Multimedia fields
+    image = models.ImageField(upload_to='incident_images/', blank=True, null=True)
+    video = models.FileField(upload_to='incident_videos/', blank=True, null=True)
+    audio = models.FileField(upload_to='incident_audio/', blank=True, null=True)
+    document = models.FileField(upload_to='incident_docs/', blank=True, null=True)
 
     def __str__(self):
         return f"{self.title} ({self.status})"
+
+    class Meta:
+        app_label = 'UlinziTracker'

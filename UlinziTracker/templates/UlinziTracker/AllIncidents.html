@@ -16,13 +16,31 @@
 </head>
 
 <style>
-  td.color_1 { background-color: #4caf50; } /* Resolved */
-  td.color_2 { background-color: #f1c40f; } /* Pending */
-  td.color_3 { background-color: #e74c3c; } /* Critical */
+  /* Status colors */
+  td.pending {
+    background-color: #f1c40f;   /* yellow for Pending */
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+  }
+  td.in_progress {
+    background-color: #3498db;   /* blue for In Progress */
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+  }
+  td.resolved {
+    background-color: #2ecc71;   /* green for Resolved */
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  /* Table styling */
   table { counter-reset: tableCount; }
   .counterCell:before { content: counter(tableCount); counter-increment: tableCount; }
+  th { font-size: 16px; font-family: Arial, sans-serif; }
   .alert { max-width: 500px; }
-  th { font-size: 16px; font-family: Arial; }
 </style>
 
 <div class="d-flex" id="wrapper">
@@ -70,12 +88,16 @@
     </nav>
 
     <div class="container-fluid mt-4">
-      {% for message in messages %}
-        <div{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
-          <a class="close ml-2" data-dismiss="alert" href="#">&times;</a>
-          {{ message }}
-        </div>
-      {% endfor %}
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  {% endfor %}
+{% endif %}
 
       <div class="card">
         <div class="card-body bg-light">
@@ -116,27 +138,28 @@
                 {% for data in c %}
                   <tr>
                     <td class="counterCell"></td>
-                    <td>usr{{ data.user.id }}</td>
-                    <td>{{ data.Subject }}</td>
-                    <td>{{ data.get_Type_of_complaint_display }}</td>
-                    <td>{{ data.Time }}</td>
+                    <td>usr{{ data.reporter.id }}</td>
+                    <td>{{ data.title }}</td>
+                    <td>{{ data.get_category_display }}</td>
+                    <td>{{ data.time_reported }}</td>
                     <td>
                       <form method="POST" action="/pdf_g/">
                         {% csrf_token %}
                         <input type="hidden" name="cid" value="{{ data.id }}">
-                        <input type="hidden" name="uid" value="{{ data.user_id }}">
+                        <input type="hidden" name="uid" value="{{ data.reporter_id }}">
                         <button type="submit" class="btn btn-info btn-sm">
                           <i class="fas fa-file-pdf"></i> Details
                         </button>
                       </form>
                     </td>
-                    <td class="color_{{ data.status }}"></td>
+                    <!-- Status cell styled by CSS -->
+                    <td class="{{ data.status }}">{{ data.get_status_display }}</td>
                     <td>
                       <form method="POST">
                         {% csrf_token %}
                         {{ forms|crispy }}
                         <input type="hidden" name="cid2" value="{{ data.id }}">
-                        <input type="hidden" name="uid" value="{{ data.user_id }}">
+                        <input type="hidden" name="uid" value="{{ data.reporter_id }}">
                         <button type="submit" class="btn btn-success btn-sm">
                           <i class="fas fa-save"></i> Submit
                         </button>

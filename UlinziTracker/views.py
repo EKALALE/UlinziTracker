@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
+from django.contrib.auth import logout
+
 
 from .models import Profile, Incident
 from .forms import (
@@ -27,6 +29,12 @@ def aboutus(request):
 # --- Incident statistics ---
 @login_required
 def incidentStats(request):
+    # Restrict: only chiefs and admins can view analytics
+    role = request.user.profile.role
+    if role not in ['chief', 'admin']:
+        messages.error(request, "You are not authorized to view incident statistics.")
+        return redirect('UlinziTracker:dashboard')
+
     total = Incident.objects.count()
     pending = Incident.objects.filter(status='pending').count()
     resolved = Incident.objects.filter(status='resolved').count()
@@ -112,37 +120,60 @@ def dashboard(request):
         p_form = ProfileUpdateForm(instance=request.user)
         profile_update_form = UserProfileUpdateForm(instance=profile)
 
-    context = {'p_form': p_form, 'profile_update_form': profile_update_form}
+    context = {
+        'p_form': p_form,
+        'profile_update_form': profile_update_form,
+        'role': profile.role  # pass role to template for conditional rendering
+    }
     return render(request, 'UlinziTracker/dashboard.html', context)
 
 # --- Incident submission ---
 @login_required
 def incidents(request):
+    if request.user.profile.role != 'resident':
+        messages.error(request, "Only residents can report incidents.")
+        return redirect('UlinziTracker:dashboard')
+
     if request.method == 'POST':
         incident_form = IncidentForm(request.POST, request.FILES)
         if incident_form.is_valid():
             instance = incident_form.save(commit=False)
             instance.reporter = request.user
             instance.save()
-            messages.success(request, 'Your incident has been registered!')
+            messages.success(request, 'Your incident has been registered with multimedia evidence!')
             return redirect('UlinziTracker:incident_list')
     else:
         incident_form = IncidentForm()
+
     return render(request, 'UlinziTracker/incident_form.html', {'incident_form': incident_form})
 
 @login_required
 def incident_list(request):
-    incidents = Incident.objects.filter(reporter=request.user)
+    role = request.user.profile.role
+    if role == 'resident':
+        incidents = Incident.objects.filter(reporter=request.user)
+    else:
+        # Officers, chiefs, admins see all incidents
+        incidents = Incident.objects.all()
     return render(request, 'UlinziTracker/AllIncidents.html', {'c': incidents})
 
 @login_required
 def solved_incidents(request):
-    incidents = Incident.objects.filter(status='resolved')
-    return render(request, 'UlinziTracker/solvedIncidents.html', {'result': incidents})
+    role = request.user.profile.role
+    if role in ['officer', 'chief', 'admin']:
+        incidents = Incident.objects.filter(status='resolved')
+    else:
+        incidents = Incident.objects.filter(status='resolved', reporter=request.user)
+    return render(request, 'UlinziTracker/resolvedIncidents.html', {'result': incidents})
 
 @login_required
 def allincidents(request):
-    incidents = Incident.objects.all()
+    role = request.user.profile.role
+    if role in ['officer', 'chief', 'admin']:
+        incidents = Incident.objects.all()
+    else:
+        messages.error(request, "You are not authorized to view all incidents.")
+        return redirect('UlinziTracker:incident_list')
     return render(request, 'UlinziTracker/AllIncidents.html', {'c': incidents})
 
 def pdf_view(request):
@@ -163,5 +194,23 @@ def pdf_view(request):
     p.showPage()
     p.save()
     return response
+
 def choose_login(request):
     return render(request, 'UlinziTracker/login_choice.html')
+
+@login_required
+def pending_incidents(request):
+    role = request.user.profile.role
+
+    # Officers, chiefs, admins can see ALL pending incidents
+    if role in ['officer', 'chief', 'admin']:
+        incidents = Incident.objects.filter(status='pending')
+    else:
+        # Residents only see their own pending incidents
+        incidents = Incident.objects.filter(status='pending', reporter=request.user)
+
+    return render(request, 'UlinziTracker/pendingIncidents.html', {'result': incidents})
+def logout_view(request):
+    logout(request)
+    messages.success(request, "You have been logged out successfully.")
+    return redirect('UlinziTracker:index')  # or 'UlinziTracker:choose_login'

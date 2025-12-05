@@ -1,0 +1,146 @@
+{% extends "UlinziTracker/index.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Pending Incidents - UlinziTracker</title>
+
+  <link href="{% static 'UlinziTracker/extra/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'UlinziTracker/css/simple-sidebar.css' %}" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<style>
+  td.pending { background-color: #f1c40f; color: #fff; text-align: center; font-weight: bold; }
+  td.in_progress { background-color: #3498db; color: #fff; text-align: center; font-weight: bold; }
+  td.resolved { background-color: #2ecc71; color: #fff; text-align: center; font-weight: bold; }
+  table { counter-reset: tableCount; }
+  .counterCell:before { content: counter(tableCount); counter-increment: tableCount; }
+  th { font-size: 16px; font-family: Arial; }
+  .alert { max-width: 500px; }
+</style>
+
+<div class="d-flex" id="wrapper">
+  <!-- Sidebar -->
+  <div class="bg-light border-right" id="sidebar-wrapper">
+    <div class="sidebar-heading text-primary font-weight-bold">
+      <i class="fas fa-shield-halved"></i> UlinziTracker
+    </div>
+    <div class="list-group list-group-flush">
+      {% if user.is_authenticated %}
+        <a href="#" class="list-group-item list-group-item-action active">
+          Welcome: {{ user.first_name }}
+        </a>
+        <a href="/dashboard/" class="list-group-item list-group-item-action">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <a href="/incidents/" class="list-group-item list-group-item-action">
+          <i class="fas fa-bullhorn"></i> Report Incident
+        </a>
+        <a href="/incidents/pending/" class="list-group-item list-group-item-action">
+          <i class="fas fa-hourglass-half"></i> Pending Incidents
+        </a>
+        <a href="/incidents/resolved/" class="list-group-item list-group-item-action">
+          <i class="fas fa-check-circle"></i> Resolved Incidents
+        </a>
+        <a href="/logout/" class="list-group-item list-group-item-action">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Page Content -->
+  <div id="page-content-wrapper">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+      <button class="btn btn-info" id="menu-toggle">Toggle Sidebar</button>
+    </nav>
+
+    <div class="container-fluid mt-4">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <div class="card">
+        <div class="card-body bg-light">
+          <h3 class="text-dark mb-4">
+            <i class="fas fa-hourglass-half"></i> Pending Incidents
+          </h3>
+
+          <div class="table-responsive">
+            <table class="table table-striped table-hover table-bordered table-sm">
+              <thead class="thead-light">
+                <tr>
+                  <th>ID</th>
+                  <th>User</th>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>Reported At</th>
+                  <th>Details</th>
+                  <th>Status</th>
+                  {% if user.profile.role in 'officer chief admin' %}
+                    <th>Actions</th>
+                  {% endif %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for incident in result %}
+                  <tr>
+                    <td class="counterCell"></td>
+                    <td>{{ incident.reporter.username }}</td>
+                    <td>{{ incident.title }}</td>
+                    <td>{{ incident.get_category_display }}</td>
+                    <td>{{ incident.time_reported }}</td>
+                    <td>
+                      <form method="POST" action="/pdf/">
+                        {% csrf_token %}
+                        <input type="hidden" name="cid" value="{{ incident.id }}">
+                        <button type="submit" class="btn btn-info btn-sm">
+                          <i class="fas fa-file-pdf"></i> Details
+                        </button>
+                      </form>
+                    </td>
+                    <td class="{{ incident.status }}">{{ incident.get_status_display }}</td>
+                    {% if user.profile.role in 'officer chief admin' %}
+                      <td>
+                        <form method="POST">
+                          {% csrf_token %}
+                          {{ forms|crispy }}
+                          <input type="hidden" name="cid2" value="{{ incident.id }}">
+                          <button type="submit" class="btn btn-success btn-sm">
+                            <i class="fas fa-save"></i> Update
+                          </button>
+                        </form>
+                      </td>
+                    {% endif %}
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="8">No pending incidents found.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $("#menu-toggle").click(function(e) {
+    e.preventDefault();
+    $("#wrapper").toggleClass("toggled");
+  });
+</script>
+
+{% endblock content %}

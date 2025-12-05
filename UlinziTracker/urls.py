@@ -11,17 +11,18 @@ urlpatterns = [
 
     path('register/', views.register, name='register'),
     path('login/', auth_views.LoginView.as_view(template_name='UlinziTracker/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='UlinziTracker/logout.html'), name='logout'),
-
+    path('logout/', views.logout_view, name='logout'),
     path('password/', views.change_password, name='change_password'),
     path('passwords/', views.change_password_g, name='change_password_g'),
 
     path('incidents/', views.incidents, name='incidents'),
     path('incident-list/', views.incident_list, name='incident_list'),
     path('allincidents/', views.allincidents, name='allincidents'),
-    path('solved/', views.solved_incidents, name='solved_incidents'),
+    path('incidents/resolved/', views.solved_incidents, name='resolved_incidents'),
     path('incidentStats/', views.incidentStats, name='incidentStats'),
     path('choose-login/', views.choose_login, name='choose_login'),
+    path('incidents/pending/', views.pending_incidents, name='pending_incidents'),
+
 
 
     path('pdf/', views.pdf_view, name='pdf_view'),

@@ -3,7 +3,7 @@
 
 <style>
   .login-choice-container {
-    max-width: 800px;
+    max-width: 1000px;
     margin: 50px auto;
     padding: 30px;
     background: #ffffff;
@@ -16,6 +16,7 @@
     border: none;
     transition: transform 0.2s;
     margin: 20px;
+    border-radius: 10px;
   }
 
   .card:hover {
@@ -24,13 +25,12 @@
 
   .icon {
     font-size: 60px;
-    color: #007bff;
     margin: 20px 0;
   }
 
   .btn {
     width: 100%;
-    margin-bottom: 10px;
+    margin-top: 10px;
   }
 </style>
 
@@ -38,26 +38,53 @@
   <h2 class="mb-4">Choose Login Type</h2>
   <div class="row justify-content-center">
 
-    <!-- Resident/Security Login -->
-    <div class="col-sm-5">
+    <!-- Resident / Security -->
+    <div class="col-sm-6 col-md-4">
       <div class="card">
         <div class="card-body">
-          <i class="fas fa-user-shield icon"></i>
-          <h5 class="card-title">Resident / Security Login</h5>
+          <i class="fas fa-user-shield icon text-primary"></i>
+          <h5 class="card-title">Resident / Security</h5>
           <p class="card-text">Report incidents and track alerts.</p>
-          <a href="{% url 'UlinziTracker:login' %}" class="btn btn-primary">Login as User</a>
+          <a href="{% url 'UlinziTracker:login' %}" class="btn btn-primary">Login</a>
+          <a href="{% url 'UlinziTracker:register' %}" class="btn btn-outline-primary">Register</a>
         </div>
       </div>
     </div>
 
-    <!-- Admin Login -->
-    <div class="col-sm-5">
+    <!-- Officer -->
+    <div class="col-sm-6 col-md-4">
       <div class="card">
         <div class="card-body">
-          <i class="fas fa-user-cog icon" style="color:#dc3545;"></i>
-          <h5 class="card-title">Admin Login</h5>
+          <i class="fas fa-user-tie icon text-success"></i>
+          <h5 class="card-title">Officer</h5>
+          <p class="card-text">Respond to incidents and manage reports.</p>
+          <a href="{% url 'UlinziTracker:login' %}" class="btn btn-success">Login</a>
+          <a href="{% url 'UlinziTracker:register' %}" class="btn btn-outline-success">Register</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Area Chief -->
+    <div class="col-sm-6 col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <i class="fas fa-user-secret icon text-warning"></i>
+          <h5 class="card-title">Area Chief</h5>
+          <p class="card-text">Oversee community safety and analytics.</p>
+          <a href="{% url 'UlinziTracker:login' %}" class="btn btn-warning">Login</a>
+          <a href="{% url 'UlinziTracker:register' %}" class="btn btn-outline-warning">Register</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin -->
+    <div class="col-sm-6 col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <i class="fas fa-user-cog icon text-danger"></i>
+          <h5 class="card-title">Admin</h5>
           <p class="card-text">Manage users and system analytics.</p>
-          <a href="/admin/" class="btn btn-danger">Login as Admin</a>
+          <a href="/admin/" class="btn btn-danger">Login</a>
         </div>
       </div>
     </div>
