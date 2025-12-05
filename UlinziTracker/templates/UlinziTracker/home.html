@@ -13,13 +13,16 @@
 
 <style>
   body {
-    background-color: #ffffff !important;
+    background-color: #f2f6f9 !important; /* soft background */
   }
   .card {
     border: none;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     transition: transform 0.2s;
     margin: 20px;
+    cursor: pointer;
+    background-color: #ffffff;
+    border-radius: 10px;
   }
   .card:hover {
     transform: scale(1.05);
@@ -27,55 +30,67 @@
   .card-body {
     text-align: center;
     font-weight: 500;
+    padding: 20px;
   }
   .icon {
     font-size: 60px;
     color: #007bff;
     margin: 20px 0;
   }
+  .card-text {
+    font-size: 18px;
+    color: #343a40;
+  }
 </style>
 
 <center>
-  <br><br><br>
+  <br><br>
   <p style="color:#343a40; font-size:40px;"> <b>Welcome to UlinziTracker</b></p>
   <p style="color:#6c757d; font-size:18px; max-width:700px;">
     A community safety platform designed to empower residents and security teams with real-time incident reporting, rapid response, and actionable insights.
+    Users can submit information before or after officer analysis — including messages, videos, audio, and documents.
   </p>
 
   <div class="row d-flex justify-content-center mt-4">
 
     <!-- Report Incidents -->
     <div class="col-sm-3">
-      <div class="card text-dark" style="width: 18rem;">
-        <div class="card-body">
-          <i class="fas fa-bullhorn icon"></i>
-          <p class="card-text">Report Incidents Instantly</p>
+      <a href="{% url 'UlinziTracker:incidents' %}" style="text-decoration: none;">
+        <div class="card text-dark">
+          <div class="card-body">
+            <i class="fas fa-bullhorn icon"></i>
+            <p class="card-text">Report Incidents Instantly</p>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
 
     <!-- Respond to Alerts -->
     <div class="col-sm-3">
-      <div class="card text-dark" style="width: 18rem;">
-        <div class="card-body">
-          <i class="fas fa-shield-halved icon"></i>
-          <p class="card-text">Track & Respond to Alerts</p>
+      <a href="{% url 'UlinziTracker:incident_list' %}" style="text-decoration: none;">
+        <div class="card text-dark">
+          <div class="card-body">
+            <i class="fas fa-shield-halved icon"></i>
+            <p class="card-text">Track & Respond to Alerts</p>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
 
     <!-- Analyze Trends -->
     <div class="col-sm-3">
-      <div class="card text-dark" style="width: 18rem;">
-        <div class="card-body">
-          <i class="fas fa-chart-bar icon"></i>
-          <p class="card-text">Analyze Safety Trends</p>
+      <a href="{% url 'UlinziTracker:incidentStats' %}" style="text-decoration: none;">
+        <div class="card text-dark">
+          <div class="card-body">
+            <i class="fas fa-chart-bar icon"></i>
+            <p class="card-text">Analyze Safety Trends</p>
+          </div>
         </div>
-      </div>
+      </a>
     </div>
 
   </div>
-  <br><br><br><br><br>
+  <br><br><br>
 </center>
 
 {% endblock %}

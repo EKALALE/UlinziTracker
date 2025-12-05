@@ -1,0 +1,61 @@
+{% extends "UlinziTracker/index.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<style>
+  body {
+    background-color: #f8f9fa;
+  }
+
+  .incident-form-container {
+    max-width: 700px;
+    margin: 50px auto;
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  }
+
+  .incident-form-container h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #343a40;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+
+  .btn-submit {
+    width: 100%;
+    background-color: #007bff;
+    border: none;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-submit:hover {
+    background-color: #0056b3;
+  }
+
+  .form-group label {
+    font-weight: 500;
+    color: #495057;
+  }
+
+  .form-control {
+    border-radius: 6px;
+  }
+</style>
+
+<div class="incident-form-container">
+  <h2>Report an Incident</h2>
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ incident_form|crispy }}
+    <button type="submit" class="btn btn-submit mt-3">Submit Incident</button>
+  </form>
+</div>
+
+{% endblock %}

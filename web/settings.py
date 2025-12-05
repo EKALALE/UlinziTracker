@@ -112,10 +112,10 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # -------------------------
 # LOGIN / LOGOUT
 # -------------------------
-LOGIN_REDIRECT_URL = '/login_redirect/'
-LOGIN_URL = 'signin'
-LOGOUT_URL = 'logout'
+LOGIN_REDIRECT_URL = 'UlinziTracker:dashboard'
+LOGIN_URL = 'UlinziTracker:login'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 
 # -------------------------
 # EMAIL SETTINGS

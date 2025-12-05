@@ -1,0 +1,68 @@
+{% extends "UlinziTracker/index.html" %}
+{% block content %}
+
+<style>
+  .login-choice-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  }
+
+  .card {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border: none;
+    transition: transform 0.2s;
+    margin: 20px;
+  }
+
+  .card:hover {
+    transform: scale(1.05);
+  }
+
+  .icon {
+    font-size: 60px;
+    color: #007bff;
+    margin: 20px 0;
+  }
+
+  .btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+</style>
+
+<div class="login-choice-container text-center">
+  <h2 class="mb-4">Choose Login Type</h2>
+  <div class="row justify-content-center">
+
+    <!-- Resident/Security Login -->
+    <div class="col-sm-5">
+      <div class="card">
+        <div class="card-body">
+          <i class="fas fa-user-shield icon"></i>
+          <h5 class="card-title">Resident / Security Login</h5>
+          <p class="card-text">Report incidents and track alerts.</p>
+          <a href="{% url 'UlinziTracker:login' %}" class="btn btn-primary">Login as User</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Login -->
+    <div class="col-sm-5">
+      <div class="card">
+        <div class="card-body">
+          <i class="fas fa-user-cog icon" style="color:#dc3545;"></i>
+          <h5 class="card-title">Admin Login</h5>
+          <p class="card-text">Manage users and system analytics.</p>
+          <a href="/admin/" class="btn btn-danger">Login as Admin</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

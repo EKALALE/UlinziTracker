@@ -63,14 +63,14 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="true" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-      
+
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
                     <a class="nav-link" href="/">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/aboutus/">About</a>
+                    <a class="nav-link" href="/aboutus/">AboutUs</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/incidents/">Incidents</a>
@@ -85,14 +85,14 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/dashboard/">Profile</a>
                         </li>
-                        <li class="nav-item"> 
+                        <li class="nav-item">
                             <a class="nav-link" href="/logout/">Logout</a>
                         </li>
                     {% elif user.is_authenticated and user.profile.type_user == 'authority' %}
                         <li class="nav-item">
                             <a class="nav-link" href="/incidents/">Manage Reports</a>
                         </li>
-                        <li class="nav-item"> 
+                        <li class="nav-item">
                             <a class="nav-link" href="/logout/">Logout</a>
                         </li>
                     {% else %}
@@ -100,14 +100,15 @@
                             <a class="nav-link" href="/register/">Register</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/login/">Login</a>
+                            <a class="nav-link" href="{% url 'UlinziTracker:choose_login' %}">Login</a>
                         </li>
+
                     {% endif %}
                 </ul>
             </form>
         </div>
     </nav>
-    
+
     {% block content %}
     {% endblock content %}
 
