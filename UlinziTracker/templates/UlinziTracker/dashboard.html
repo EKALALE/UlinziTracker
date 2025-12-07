@@ -11,13 +11,99 @@
   <!-- Bootstrap core CSS -->
   <link href="{% static 'UlinziTracker/extra/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
   <link href="{% static 'UlinziTracker/css/simple-sidebar.css' %}" rel="stylesheet">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
+<style>
+  body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  #sidebar-wrapper {
+    box-shadow: 2px 0 6px rgba(0,0,0,0.1);
+  }
+
+  .sidebar-heading {
+    font-size: 1.3rem;
+    padding: 20px;
+    background-color: #f1f3f5;
+    font-weight: bold;
+    color: #007bff;
+  }
+
+  .list-group-item {
+    font-size: 1rem;
+    padding: 15px 20px;
+    transition: background-color 0.2s ease;
+  }
+
+  .list-group-item:hover {
+    background-color: #e9ecef;
+  }
+
+  .list-group-item.active {
+    background-color: #007bff;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .profile-card {
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    background-color: #ffffff;
+    margin-top: 30px;
+    overflow: hidden;
+  }
+
+  .profile-card-header {
+    background: linear-gradient(135deg, #007bff, #00c6ff);
+    color: #fff;
+    padding: 30px;
+    text-align: center;
+  }
+
+  .profile-card-header h4 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .profile-card-header p {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .profile-card-body {
+    padding: 30px;
+  }
+
+  .btn-update {
+    background-color: #dc3545;
+    border: none;
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+    color: #fff;
+  }
+
+  .btn-update:hover {
+    background-color: #a71d2a;
+  }
+
+  .card-header.bg-primary {
+    border-radius: 12px 12px 0 0;
+  }
+</style>
 
 <div class="d-flex" id="wrapper">
 
   <!-- Sidebar -->
   <div class="bg-light border-right" id="sidebar-wrapper">
-    <div class="sidebar-heading"><strong>UlinziTracker</strong></div>
+    <div class="sidebar-heading"><i class="fas fa-shield-halved"></i> UlinziTracker</div>
     <div class="list-group list-group-flush">
       {% if user.is_authenticated %}
         <a href="#" class="list-group-item list-group-item-action active">
@@ -66,45 +152,35 @@
       <button class="btn btn-primary" id="menu-toggle">Toggle Sidebar</button>
     </nav>
 
-    <br>
     <!-- Profile Section -->
     <div class="col-md-12">
-      <div class="card">
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-3">
-              <h4>Your Profile</h4>
-              <hr>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12" style="margin:10px">
-              {% if messages %}
-                <ul>
-       {% if messages %}
-                    {% for message in messages %}
-  <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-    {{ message }}
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-         {% endfor %}
+      <div class="card profile-card">
+        <div class="profile-card-header">
+          <h4>Your Profile</h4>
+          <p>{{ user.username }} | {{ user.email }}</p>
+        </div>
+        <div class="profile-card-body">
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            {% endfor %}
+          {% endif %}
 
-{% endif %}
-
-                </ul>
-              {% endif %}
-              <form method="post">
-                {% csrf_token %}
-                {{ p_form|crispy }}
-                <div class="form-row">
-                  {{ profile_update_form|crispy }}
-                </div>
-                <button type="submit" class="btn btn-primary m-2">Update Profile</button>
-              </form>
+          <form method="post">
+            {% csrf_token %}
+            {{ p_form|crispy }}
+            <div class="form-row">
+              {{ profile_update_form|crispy }}
             </div>
-          </div>
+            <button type="submit" class="btn btn-update mt-3">
+              <i class="fas fa-save"></i> Update Profile
+            </button>
+          </form>
         </div>
       </div>
     </div>
@@ -114,15 +190,13 @@
     <div class="col-md-12 mt-4">
       <div class="card">
         <div class="card-header bg-primary text-white">
-          <h5>Incident Analytics</h5>
+          <h5><i class="fas fa-chart-pie"></i> Incident Analytics</h5>
         </div>
         <div class="card-body">
           <div class="row">
-            <!-- Pie Chart: Incident Status -->
             <div class="col-md-6">
               <canvas id="incidentStatusChart"></canvas>
             </div>
-            <!-- Bar Chart: Incident Categories -->
             <div class="col-md-6">
               <canvas id="incidentCategoryChart"></canvas>
             </div>
@@ -131,13 +205,13 @@
       </div>
     </div>
     {% endif %}
-
   </div>
 </div>
 
 <!-- Chart.js Script -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+  // Status (Pie)
   const incidentStatusData = {
     labels: ['Pending', 'In Progress', 'Resolved'],
     datasets: [{
@@ -146,31 +220,51 @@
     }]
   };
 
+  const statusCtx = document.getElementById('incidentStatusChart');
+  if (statusCtx) {
+    new Chart(statusCtx, {
+      type: 'pie',
+      data: incidentStatusData,
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } }
+      }
+    });
+  }
+
+  // Categories (Bar)
   const incidentCategoryData = {
     labels: ['Suspicious Activity', 'Emergency', 'Disturbance', 'Other'],
     datasets: [{
       label: 'Incidents',
       data: [5, 8, 6, 3],
-      backgroundColor: '#007bff'
+      backgroundColor: ['#007bff', '#17a2b8', '#ffc107', '#6c757d']
     }]
   };
 
-  new Chart(document.getElementById('incidentStatusChart'), {
-    type: 'pie',
-    data: incidentStatusData,
-    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-  });
+  const categoryCtx = document.getElementById('incidentCategoryChart');
+  if (categoryCtx) {
+    new Chart(categoryCtx, {
+      type: 'bar',
+      data: incidentCategoryData,
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1 }
+          }
+        }
+      }
+    });
+  }
 
-  new Chart(document.getElementById('incidentCategoryChart'), {
-    type: 'bar',
-    data: incidentCategoryData,
-    options: { responsive: true, scales: { y: { beginAtZero: true } } }
-  });
-
-  $("#menu-toggle").click(function(e) {
+  // Sidebar toggle
+  document.getElementById('menu-toggle').addEventListener('click', function(e) {
     e.preventDefault();
-    $("#wrapper").toggleClass("toggled");
+    document.getElementById('wrapper').classList.toggle('toggled');
   });
 </script>
 
-{% endblock content %}
+{% endblock %}

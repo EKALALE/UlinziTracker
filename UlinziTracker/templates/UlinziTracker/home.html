@@ -5,92 +5,141 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Bootstrap -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <!-- FontAwesome for icons -->
+  <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <style>
   body {
-     background-color: #f2f6f9 !important; /* soft background */
+    background-color: #fffbea !important; /* faded yellow background */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
+
+  .home-section {
+    text-align: center;
+    padding: 70px 20px;
+  }
+
+  .home-section h1 {
+    font-size: 2.8rem; /* slightly larger */
+    font-weight: bold;
+    color: #212529;
+    margin-bottom: 25px;
+  }
+
+  .home-section p {
+    max-width: 850px;
+    margin: 0 auto 50px;
+    font-size: 1.2rem; /* larger text for readability */
+    color: #444;
+    line-height: 1.8;
+  }
+
   .card {
     border: none;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
-    margin: 20px;
-    cursor: pointer;
-    background-color: #ffffff;
-    border-radius: 10px;
-  }
-  .card:hover {
-    transform: scale(1.05);
-  }
-  .card-body {
+    border-radius: 14px;
+    padding: 35px 25px;
     text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    margin: 20px;
+    background-color: #ffffff;
+  }
+
+  .card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+  }
+
+  .card i {
+    font-size: 3.2rem;
+    margin-bottom: 20px;
+    color: #ffc107; /* yellow accent for icons */
+    transition: transform 0.3s ease;
+  }
+
+  .card:hover i {
+    transform: scale(1.2) rotate(5deg);
+  }
+
+  .card h4 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #212529;
+  }
+
+  .card p {
+    font-size: 1rem;
+    margin-bottom: 25px;
+    color: #555;
+  }
+
+  .card a.btn {
+    background-color: #dc3545; /* red button */
+    color: #fff;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-size: 1rem;
     font-weight: 500;
-    padding: 20px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
   }
-  .icon {
-    font-size: 60px;
-    color: #007bff;
-    margin: 20px 0;
-  }
-  .card-text {
-    font-size: 18px;
-    color: #343a40;
+
+  .card a.btn:hover {
+    background-color: #a71d2a;
   }
 </style>
 
-<center>
-  <br><br>
-  <p style="color:#343a40; font-size:40px;"> <b>Welcome to UlinziTracker</b></p>
-  <p style="color:#6c757d; font-size:18px; max-width:700px;">
-    A community safety platform designed to empower residents and security teams with real-time incident reporting, rapid response, and actionable insights.
-    Users can submit information before or after officer analysis — including messages, videos, audio, and documents.
+<div class="home-section">
+  <h1>Welcome to UlinziTracker</h1>
+  <p>
+    A community safety platform designed to empower residents and security teams with real-time incident reporting,
+    rapid response, and actionable insights. Users can submit information before or after officer analysis —
+    including messages, videos, audio, and documents.
   </p>
 
-  <div class="row d-flex justify-content-center mt-4">
+  <div class="row d-flex justify-content-center">
 
     <!-- Report Incidents -->
-    <div class="col-sm-3">
-      <a href="{% url 'UlinziTracker:incidents' %}" style="text-decoration: none;">
-        <div class="card text-dark">
-          <div class="card-body">
-            <i class="fas fa-bullhorn icon"></i>
-            <p class="card-text">Report Incidents Instantly</p>
-          </div>
-        </div>
-      </a>
+    <div class="col-sm-4">
+      <div class="card">
+        <i class="fas fa-bullhorn"></i>
+        <h4>Report Incidents Instantly</h4>
+        <p>Submit detailed reports with multimedia evidence to keep your community safe.</p>
+        <a href="{% url 'UlinziTracker:incidents' %}" class="btn">
+          <i class="fas fa-paper-plane"></i> Report Now
+        </a>
+      </div>
     </div>
 
     <!-- Respond to Alerts -->
-    <div class="col-sm-3">
-      <a href="{% url 'UlinziTracker:incident_list' %}" style="text-decoration: none;">
-        <div class="card text-dark">
-          <div class="card-body">
-            <i class="fas fa-shield-halved icon"></i>
-            <p class="card-text">Track & Respond to Alerts</p>
-          </div>
-        </div>
-      </a>
+    <div class="col-sm-4">
+      <div class="card">
+        <i class="fas fa-shield-halved"></i>
+        <h4>Track & Respond to Alerts</h4>
+        <p>Authorities and officers can monitor incidents and respond quickly to emergencies.</p>
+        <a href="{% url 'UlinziTracker:incident_list' %}" class="btn">
+          <i class="fas fa-bolt"></i> View Alerts
+        </a>
+      </div>
     </div>
 
     <!-- Analyze Trends -->
-    <div class="col-sm-3">
-      <a href="{% url 'UlinziTracker:incidentStats' %}" style="text-decoration: none;">
-        <div class="card text-dark">
-          <div class="card-body">
-            <i class="fas fa-chart-bar icon"></i>
-            <p class="card-text">Analyze Safety Trends</p>
-          </div>
-        </div>
-      </a>
+    <div class="col-sm-4">
+      <div class="card">
+        <i class="fas fa-chart-bar"></i>
+        <h4>Analyze Safety Trends</h4>
+        <p>Gain insights into incident patterns and improve community safety strategies.</p>
+        <a href="{% url 'UlinziTracker:incidentStats' %}" class="btn">
+          <i class="fas fa-chart-line"></i> View Stats
+        </a>
+      </div>
     </div>
 
   </div>
-  <br><br><br>
-</center>
+</div>
 
 {% endblock %}

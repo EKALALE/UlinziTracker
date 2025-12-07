@@ -3,62 +3,156 @@
 
 {% block content %}
 <style>
-  .about-container {
-    min-height: calc(100vh - 100px); /* full screen minus navbar+footer */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 40px 20px;
-    background-color: #ffffff;
+  body {
+    background-color: #f8f9fa; /* light gray background */
   }
 
-  .about-container h2 {
-    color: #343a40;
+  .about-section {
+    padding: 60px 20px;
+    background-color: #f8f9fa;
+    text-align: center;
+  }
+
+  .about-section h2 {
+    font-size: 2.2rem;
     font-weight: bold;
     margin-bottom: 20px;
+    color: #212529;
   }
 
-  .about-container p {
-    max-width: 700px;
-    text-align: center;
-    color: #666;
-    line-height: 1.6;
-  }
-
-  .about-container ul {
-    max-width: 700px;
-    text-align: left;
-    margin: 20px auto;
-    padding-left: 20px;
-    color: #444;
-  }
-
-  .about-container li {
-    margin-bottom: 10px;
+  .about-section p {
+    max-width: 800px;
+    margin: 0 auto 30px;
     font-size: 1.1rem;
+    line-height: 1.7;
+    color: #555;
+  }
+
+  .features-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 40px;
+    gap: 20px;
+  }
+
+  .feature-card {
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    padding: 30px 20px;
+    width: 280px;
+    text-align: center;
+    color: #fff;
+    opacity: 0; /* hidden initially */
+    transform: translateY(30px);
+    transition: all 0.6s ease;
+  }
+
+  .feature-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .feature-card i {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+
+  .feature-card:hover i {
+    transform: scale(1.2) rotate(5deg); /* bounce effect */
+  }
+
+  .feature-card h4 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .feature-card p {
+    font-size: 0.95rem;
+  }
+
+  /* Different background colors for each card */
+  .card-text { background-color: #007bff; }   /* Blue */
+  .card-video { background-color: #28a745; }  /* Green */
+  .card-audio { background-color: #ffc107; color: #212529; } /* Yellow */
+  .card-doc   { background-color: #dc3545; }  /* Red */
+
+  .cta-section {
+    margin-top: 60px;
+    text-align: center;
+  }
+
+  .cta-section a {
+    background-color: #dc3545; /* red button */
+    color: #fff;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .cta-section a:hover {
+    background-color: #a71d2a;
   }
 </style>
 
-<div class="about-container">
+<div class="about-section">
   <h2>About UlinziTracker</h2>
   <p>
-    <strong>UlinziTracker</strong> is a community safety platform that enables residents to report incidents,
-    share information, and collaborate with security services for safer neighborhoods.
-    <br><br>
-    Users can submit detailed reports and also upload supporting materials such as:
+    <strong>UlinziTracker</strong> empowers residents to report incidents and collaborate with local security services.
+    Our mission is to build safer, more connected neighborhoods through real-time reporting and multimedia evidence.
   </p>
 
-  <ul>
-    <li>📩 Text messages describing incidents</li>
-    <li>🎥 Videos providing visual evidence</li>
-    <li>🎙️ Audio recordings for clarity</li>
-    <li>📎 Other documents or files to strengthen reports</li>
-  </ul>
+  <div class="features-container">
+    <div class="feature-card card-text">
+      <i class="fas fa-comment-alt"></i>
+      <h4>Text Reports</h4>
+      <p>Submit detailed incident descriptions for clarity and accuracy.</p>
+    </div>
 
-  <p>
-    By combining real-time reporting with multimedia evidence, UlinziTracker ensures that every incident
-    is documented thoroughly and can be acted upon quickly. Together, we build safer, more connected communities.
-  </p>
+    <div class="feature-card card-video">
+      <i class="fas fa-video"></i>
+      <h4>Video Evidence</h4>
+      <p>Upload videos to provide strong visual proof of incidents.</p>
+    </div>
+
+    <div class="feature-card card-audio">
+      <i class="fas fa-microphone"></i>
+      <h4>Audio Support</h4>
+      <p>Attach audio recordings to add context and strengthen reports.</p>
+    </div>
+
+    <div class="feature-card card-doc">
+      <i class="fas fa-paperclip"></i>
+      <h4>Documents</h4>
+      <p>Include files or documents to back up your submissions.</p>
+    </div>
+  </div>
+
+  <div class="cta-section">
+    <a href="{% url 'UlinziTracker:incidents' %}">
+      <i class="fas fa-shield-alt"></i> Start Reporting Now
+    </a>
+  </div>
 </div>
+
+<script>
+  // Reveal cards on scroll
+  document.addEventListener("scroll", function() {
+    const cards = document.querySelectorAll(".feature-card");
+    const triggerBottom = window.innerHeight * 0.85;
+
+    cards.forEach(card => {
+      const cardTop = card.getBoundingClientRect().top;
+      if (cardTop < triggerBottom) {
+        card.classList.add("visible");
+      }
+    });
+  });
+</script>
 {% endblock %}
