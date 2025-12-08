@@ -10,6 +10,7 @@ from reportlab.pdfgen import canvas
 from django.contrib.auth import logout
 
 
+
 from .models import Profile, Incident
 from .forms import (
     UserRegisterForm,
@@ -101,24 +102,33 @@ def register(request):
         form = UserRegisterForm()
         profile_form = UserProfileForm()
     return render(request, 'UlinziTracker/register.html', {'form': form, 'profile_form': profile_form})
-
 @login_required
 def dashboard(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
+        # Pass the user into the forms so they know who is editing
         p_form = ProfileUpdateForm(request.POST, instance=request.user)
-        profile_update_form = UserProfileUpdateForm(request.POST, instance=profile)
+        profile_update_form = UserProfileUpdateForm(request.POST, instance=profile, user=request.user)
+
         if p_form.is_valid() and profile_update_form.is_valid():
             user = p_form.save()
             profile = profile_update_form.save(commit=False)
+
+            # Enforce role immutability unless superuser
+            if not request.user.is_superuser:
+                # Reset role back to original if someone tried to change it
+                original_role = Profile.objects.get(pk=profile.pk).role
+                profile.role = original_role
+
             profile.user = user
             profile.save()
+
             messages.success(request, 'Updated Successfully')
             return redirect('UlinziTracker:dashboard')
     else:
         p_form = ProfileUpdateForm(instance=request.user)
-        profile_update_form = UserProfileUpdateForm(instance=profile)
+        profile_update_form = UserProfileUpdateForm(instance=profile, user=request.user)
 
     context = {
         'p_form': p_form,
@@ -195,9 +205,6 @@ def pdf_view(request):
     p.save()
     return response
 
-def choose_login(request):
-    return render(request, 'UlinziTracker/login_choice.html')
-
 @login_required
 def pending_incidents(request):
     role = request.user.profile.role
@@ -213,4 +220,106 @@ def pending_incidents(request):
 def logout_view(request):
     logout(request)
     messages.success(request, "You have been logged out successfully.")
-    return redirect('UlinziTracker:index')  # or 'UlinziTracker:choose_login'
+    return redirect('UlinziTracker:login')  # or 'UlinziTracker:choose_login'
+
+@login_required
+def edit_incident(request, id):
+    incident = get_object_or_404(Incident, id=id)
+    if request.user != incident.reporter and not request.user.is_superuser:
+        messages.error(request, "You are not authorized to edit this incident.")
+        return redirect('UlinziTracker:incident_list')
+
+    if request.method == 'POST':
+        form = IncidentForm(request.POST, request.FILES, instance=incident)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Incident updated successfully.")
+            return redirect('UlinziTracker:incident_list')
+    else:
+        form = IncidentForm(instance=incident)
+
+    return render(request, 'UlinziTracker/edit_incident.html', {'form': form})
+
+@login_required
+def update_status(request, id):
+    incident = get_object_or_404(Incident, id=id)
+    if request.user != incident.reporter and not request.user.is_superuser:
+        messages.error(request, "You are not authorized to update this incident.")
+        return redirect('UlinziTracker:incident_list')
+
+    if request.method == 'POST':
+        form = StatusUpdateForm(request.POST, instance=incident)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Status updated.")
+    return redirect('UlinziTracker:incident_list')
+
+@login_required
+@login_required
+def delete_incident(request, id):
+    incident = get_object_or_404(Incident, id=id)
+
+    # Only reporter or superuser can delete
+    if request.user != incident.reporter and not request.user.is_superuser:
+        messages.error(request, "You are not authorized to delete this incident.")
+        return redirect('UlinziTracker:incident_list')
+
+    if request.method == 'POST':
+        incident.delete()
+        messages.success(request, "Incident deleted successfully.")
+        return redirect('UlinziTracker:incident_list')
+
+    # Render confirmation page
+    return render(request, 'UlinziTracker/delete_incident.html', {'incident': incident})
+
+def redirect_after_login(user):
+    if user.is_superuser or user.profile.role == 'admin':
+        return 'UlinziTracker:dashboard'   # Admin dashboard
+    elif user.profile.role == 'officer':
+        return 'UlinziTracker:incident_list'   # Officers see all incidents
+    elif user.profile.role == 'chief':
+        return 'UlinziTracker:incidentStats'   # Chiefs see analytics
+    elif user.profile.role == 'authority':
+        return 'UlinziTracker:incidentStats'   # Authorities also see analytics
+    else:  # resident
+        return 'UlinziTracker:incident_list'   # Residents see only their own incidents
+
+
+
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login
+
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            messages.success(request, f"Welcome back, {user.username}!")
+            # Use the helper function to send them to the right dashboard
+            return redirect(redirect_after_login(user))
+        else:
+            messages.error(request, "Invalid username or password.")
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'UlinziTracker/login.html', {'form': form})
+
+@login_required
+def confirm_incident(request, incident_id):
+    incident = get_object_or_404(Incident, id=incident_id)
+
+    if request.user.profile.role == 'officer':
+        if request.method == 'POST':
+            note = request.POST.get('response_notes')
+            incident.status = 'confirmed'
+            incident.confirmed_by = request.user
+            incident.response_notes = note
+            incident.save()
+            messages.success(request, f"Incident {incident.id} confirmed with response.")
+            return redirect('UlinziTracker:pending_incidents')
+    else:
+        messages.error(request, "Only officers can confirm incidents.")
+        return redirect('UlinziTracker:pending_incidents')
+
+    return render(request, 'UlinziTracker/confirm_incident.html', {'incident': incident})

@@ -107,7 +107,7 @@
     <div class="list-group list-group-flush">
       {% if user.is_authenticated %}
         <a href="#" class="list-group-item list-group-item-action active">
-          Welcome: {{ user.username }} ({{ user.profile.role|title }})
+          Welcome: {{ user.username }} ({% if user.is_superuser %}Admin{% else %}{{ user.profile.role|title }}{% endif %})
         </a>
         <a href="{% url 'UlinziTracker:dashboard' %}" class="list-group-item list-group-item-action">Profile</a>
         <a href="/password/" class="list-group-item list-group-item-action">Reset Password</a>
@@ -134,11 +134,20 @@
           <a href="/incidentStats/" class="list-group-item list-group-item-action">Analytics</a>
         {% endif %}
 
-        {% if user.profile.role == 'admin' %}
-          <a href="/admin/" class="list-group-item list-group-item-action">Admin Dashboard</a>
-          <a href="/incidentStats/" class="list-group-item list-group-item-action">System Analytics</a>
-          <a href="/incidents/" class="list-group-item list-group-item-action">All Incidents</a>
-        {% endif %}
+{% if user.is_superuser or user.profile.role == 'admin' %}
+  <a href="/admin/" target="_blank" rel="noopener noreferrer"
+     class="list-group-item list-group-item-action text-danger">
+    <i class="fas fa-cogs"></i> Administration
+    <span class="badge badge-danger ml-2">Admin</span>
+  </a>
+  <a href="/incidentStats/" class="list-group-item list-group-item-action">
+    <i class="fas fa-chart-line"></i> System Analytics
+  </a>
+  <a href="/incidents/" class="list-group-item list-group-item-action">
+    <i class="fas fa-list"></i> All Incidents
+  </a>
+{% endif %}
+
 
         <a href="/logout/" class="list-group-item list-group-item-action">Logout</a>
       {% endif %}
@@ -158,18 +167,25 @@
         <div class="profile-card-header">
           <h4>Your Profile</h4>
           <p>{{ user.username }} | {{ user.email }}</p>
+          {% if user.is_superuser %}
+            <p><i class="fas fa-user-shield"></i> Role: Admin (Superuser)</p>
+          {% else %}
+            <p><i class="fas fa-user-tag"></i> Role: {{ role }}</p>
+          {% endif %}
         </div>
         <div class="profile-card-body">
-          {% if messages %}
-            {% for message in messages %}
-              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-            {% endfor %}
-          {% endif %}
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  {% endfor %}
+{% endif %}
+
 
           <form method="post">
             {% csrf_token %}
@@ -249,11 +265,20 @@
       data: incidentCategoryData,
       options: {
         responsive: true,
-        plugins: { legend: { display: false } },
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true }
+        },
         scales: {
+          x: {
+            title: { display: true, text: 'Category' },
+            ticks: { color: '#495057' }
+          },
           y: {
             beginAtZero: true,
-            ticks: { stepSize: 1 }
+            title: { display: true, text: 'Count' },
+            ticks: { stepSize: 1, color: '#495057' },
+            grid: { color: 'rgba(0,0,0,0.1)' }
           }
         }
       }
@@ -261,10 +286,14 @@
   }
 
   // Sidebar toggle
-  document.getElementById('menu-toggle').addEventListener('click', function(e) {
-    e.preventDefault();
-    document.getElementById('wrapper').classList.toggle('toggled');
-  });
+  const toggleBtn = document.getElementById('menu-toggle');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const wrapper = document.getElementById('wrapper');
+      if (wrapper) wrapper.classList.toggle('toggled');
+    });
+  }
 </script>
 
 {% endblock %}

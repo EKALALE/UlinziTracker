@@ -18,19 +18,25 @@
 <style>
   /* Status colors */
   td.pending {
-    background-color: #f1c40f;   /* yellow for Pending */
+    background-color: #f1c40f;
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+  }
+  td.confirmed {
+    background-color: #17a2b8;
     color: #fff;
     font-weight: bold;
     text-align: center;
   }
   td.in_progress {
-    background-color: #3498db;   /* blue for In Progress */
+    background-color: #3498db;
     color: #fff;
     font-weight: bold;
     text-align: center;
   }
   td.resolved {
-    background-color: #2ecc71;   /* green for Resolved */
+    background-color: #2ecc71;
     color: #fff;
     font-weight: bold;
     text-align: center;
@@ -88,16 +94,16 @@
     </nav>
 
     <div class="container-fluid mt-4">
-{% if messages %}
-  {% for message in messages %}
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      {{ message }}
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-  {% endfor %}
-{% endif %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        {% endfor %}
+      {% endif %}
 
       <div class="card">
         <div class="card-body bg-light">
@@ -155,15 +161,30 @@
                     <!-- Status cell styled by CSS -->
                     <td class="{{ data.status }}">{{ data.get_status_display }}</td>
                     <td>
-                      <form method="POST">
-                        {% csrf_token %}
-                        {{ forms|crispy }}
-                        <input type="hidden" name="cid2" value="{{ data.id }}">
-                        <input type="hidden" name="uid" value="{{ data.reporter_id }}">
-                        <button type="submit" class="btn btn-success btn-sm">
-                          <i class="fas fa-save"></i> Submit
-                        </button>
-                      </form>
+                      {% if user == data.reporter or user.is_superuser %}
+                        <!-- Edit -->
+                        <a href="{% url 'UlinziTracker:edit_incident' data.id %}" class="btn btn-warning btn-sm mb-1">
+                          <i class="fas fa-edit"></i> Edit
+                        </a>
+
+                        <!-- Update Status -->
+                        <a href="{% url 'UlinziTracker:update_status' data.id %}" class="btn btn-success btn-sm mb-1">
+                          <i class="fas fa-sync-alt"></i> Update
+                        </a>
+
+                        <!-- Delete -->
+                        <a href="{% url 'UlinziTracker:delete_incident' data.id %}" class="btn btn-danger btn-sm">
+                          <i class="fas fa-trash-alt"></i> Delete
+                        </a>
+
+                      {% elif user.profile.role == 'officer' and data.status == 'pending' %}
+                        <!-- Officer Respond -->
+                        <a href="{% url 'UlinziTracker:confirm_incident' data.id %}" class="btn btn-sm btn-success">
+                          <i class="fas fa-comment-dots"></i> Respond
+                        </a>
+                      {% else %}
+                        <span class="text-muted">No actions</span>
+                      {% endif %}
                     </td>
                   </tr>
                 {% endfor %}

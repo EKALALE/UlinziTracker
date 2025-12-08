@@ -43,11 +43,16 @@ def create_user_profile(sender, instance, created, **kwargs):
 # Incident/Report model
 # ---------------------------
 class Incident(models.Model):
-    STATUS_CHOICES = (
+    STATUS_CHOICES = [
         ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
         ('in_progress', 'In Progress'),
         ('resolved', 'Resolved'),
-    )
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    confirmed_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='confirmed_incidents')
+    response_notes = models.TextField(blank=True, null=True)  # Officer’s response
+
 
     CATEGORY_CHOICES = (
         ('suspicious_activity', 'Suspicious Activity'),

@@ -1,0 +1,20 @@
+{% extends "UlinziTracker/index.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h3>Respond to Incident #{{ incident.id }}</h3>
+  <p><strong>Reported by:</strong> {{ incident.user.username }}</p>
+  <p><strong>Title:</strong> {{ incident.title }}</p>
+  <p><strong>Description:</strong> {{ incident.description }}</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="response_notes">Response Note</label>
+      <textarea name="response_notes" class="form-control" rows="3" placeholder="Write your response..."></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">
+      <i class="fas fa-check-circle"></i> Confirm & Respond
+    </button>
+  </form>
+</div>
+{% endblock %}

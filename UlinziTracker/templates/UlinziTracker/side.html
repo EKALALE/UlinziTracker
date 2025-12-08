@@ -22,28 +22,38 @@
     <div class="sidebar-heading text-primary font-weight-bold">
       <i class="fas fa-shield-halved"></i> UlinziTracker
     </div>
-    <div class="list-group list-group-flush">
-      {% if user.is_authenticated %}
+       <div class="list-group list-group-flush">
+         {% if user.is_authenticated %}
         <a href="/dashboard/" class="list-group-item list-group-item-action bg-light">
-          <i class="fas fa-tachometer-alt"></i> Dashboard
+        <i class="fas fa-tachometer-alt"></i> Dashboard
         </a>
-        <a href="/incidents/" class="list-group-item list-group-item-action bg-light">
-          <i class="fas fa-bullhorn"></i> Report Incident
-        </a>
-        <a href="/incidents/pending/" class="list-group-item list-group-item-action bg-light">
-          <i class="fas fa-hourglass-half"></i> Pending Incidents
-        </a>
-        <a href="/incidents/resolved/" class="list-group-item list-group-item-action bg-light">
-          <i class="fas fa-check-circle"></i> Resolved Incidents
-        </a>
-        <a href="/profile/" class="list-group-item list-group-item-action bg-light">
-          <i class="fas fa-user"></i> Profile
-        </a>
-        <a href="/logout/" class="list-group-item list-group-item-action bg-light">
-          <i class="fas fa-sign-out-alt"></i> Logout
-        </a>
-      {% endif %}
-    </div>
+          <a href="/incidents/" class="list-group-item list-group-item-action bg-light">
+           <i class="fas fa-bullhorn"></i> Report Incident
+           </a>
+         <a href="/incidents/pending/" class="list-group-item list-group-item-action bg-light">
+         <i class="fas fa-hourglass-half"></i> Pending Incidents
+       </a>
+       <a href="/incidents/resolved/" class="list-group-item list-group-item-action bg-light">
+      <i class="fas fa-check-circle"></i> Resolved Incidents
+      </a>
+     <a href="/profile/" class="list-group-item list-group-item-action bg-light">
+      <i class="fas fa-user"></i> Profile
+     </a>
+
+     {% if user.is_superuser or role == 'admin' %}
+      <a href="/admin/" target="_blank" rel="noopener noreferrer"
+         class="list-group-item list-group-item-action text-danger">
+        <i class="fas fa-cogs"></i> Administration
+        <span class="badge badge-danger ml-2">Admin</span>
+      </a>
+    {% endif %}
+
+    <a href="/logout/" class="list-group-item list-group-item-action bg-light">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
+   {% endif %}
+</div>
+
   </div>
   <!-- /#sidebar-wrapper -->
 
