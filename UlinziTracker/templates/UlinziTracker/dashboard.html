@@ -1,212 +1,167 @@
 {% extends "UlinziTracker/index.html" %}
 {% load crispy_forms_tags %}
-{% load static %}
 {% block content %}
-
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>UlinziTracker Dashboard</title>
-
-  <!-- Bootstrap core CSS -->
-  <link href="{% static 'UlinziTracker/extra/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-  <link href="{% static 'UlinziTracker/css/simple-sidebar.css' %}" rel="stylesheet">
-  <!-- FontAwesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-
 <style>
-  body {
-    background-color: #f8f9fa;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
+    /* Solid blue header background */
+.bg-blue-header {
+  background-color: #007bff; /* Bootstrap primary blue */
+}
 
-  #sidebar-wrapper {
-    box-shadow: 2px 0 6px rgba(0,0,0,0.1);
-  }
+/* White text for header content */
+.text-white-header {
+  color: #ffffff !important;
+}
 
-  .sidebar-heading {
-    font-size: 1.3rem;
-    padding: 20px;
-    background-color: #f1f3f5;
-    font-weight: bold;
-    color: #007bff;
-  }
-
-  .list-group-item {
-    font-size: 1rem;
-    padding: 15px 20px;
-    transition: background-color 0.2s ease;
-  }
-
-  .list-group-item:hover {
-    background-color: #e9ecef;
-  }
-
-  .list-group-item.active {
-    background-color: #007bff;
-    color: #fff;
-    font-weight: 600;
-  }
-
-  .profile-card {
-    border-radius: 12px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-    background-color: #ffffff;
-    margin-top: 30px;
-    overflow: hidden;
-  }
-
-  .profile-card-header {
-    background: linear-gradient(135deg, #007bff, #00c6ff);
-    color: #fff;
-    padding: 30px;
-    text-align: center;
-  }
-
-  .profile-card-header h4 {
-    font-size: 1.8rem;
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-
-  .profile-card-header p {
-    margin: 0;
-    font-size: 1rem;
-  }
-
-  .profile-card-body {
-    padding: 30px;
-  }
-
-  .btn-update {
-    background-color: #dc3545;
-    border: none;
-    padding: 12px 25px;
-    font-size: 1rem;
-    font-weight: 500;
-    border-radius: 6px;
-    transition: background-color 0.3s ease;
-    color: #fff;
-  }
-
-  .btn-update:hover {
-    background-color: #a71d2a;
-  }
-
-  .card-header.bg-primary {
-    border-radius: 12px 12px 0 0;
-  }
 </style>
 
-<div class="d-flex" id="wrapper">
+<div class="container-fluid py-4">
 
-  <!-- Sidebar -->
-  <div class="bg-light border-right" id="sidebar-wrapper">
-    <div class="sidebar-heading"><i class="fas fa-shield-halved"></i> UlinziTracker</div>
-    <div class="list-group list-group-flush">
-      {% if user.is_authenticated %}
-        <a href="#" class="list-group-item list-group-item-action active">
-          Welcome: {{ user.username }} ({% if user.is_superuser %}Admin{% else %}{{ user.profile.role|title }}{% endif %})
-        </a>
-        <a href="{% url 'UlinziTracker:dashboard' %}" class="list-group-item list-group-item-action">Profile</a>
-        <a href="/password/" class="list-group-item list-group-item-action">Reset Password</a>
-
-        {% if user.profile.role == 'resident' %}
-          <a href="/incidents/" class="list-group-item list-group-item-action">Report Incident</a>
-          <a href="/incidents/pending/" class="list-group-item list-group-item-action">My Pending Incidents</a>
-          <a href="/incidents/resolved/" class="list-group-item list-group-item-action">My Resolved Incidents</a>
-        {% endif %}
-
-        {% if user.profile.role == 'officer' %}
-          <a href="/incidents/pending/" class="list-group-item list-group-item-action">Pending Incidents</a>
-          <a href="/incidents/resolved/" class="list-group-item list-group-item-action">Resolved Incidents</a>
-          <a href="/incidents/" class="list-group-item list-group-item-action">All Incidents</a>
-        {% endif %}
-
-        {% if user.profile.role == 'chief' %}
-          <a href="/incidentStats/" class="list-group-item list-group-item-action">Analytics</a>
-          <a href="/incidents/" class="list-group-item list-group-item-action">All Incidents</a>
-        {% endif %}
-
-        {% if user.profile.role == 'authority' %}
-          <a href="/incidents/" class="list-group-item list-group-item-action">Manage Reports</a>
-          <a href="/incidentStats/" class="list-group-item list-group-item-action">Analytics</a>
-        {% endif %}
-
-{% if user.is_superuser or user.profile.role == 'admin' %}
-  <a href="/admin/" target="_blank" rel="noopener noreferrer"
-     class="list-group-item list-group-item-action text-danger">
-    <i class="fas fa-cogs"></i> Administration
-    <span class="badge badge-danger ml-2">Admin</span>
-  </a>
-  <a href="/incidentStats/" class="list-group-item list-group-item-action">
-    <i class="fas fa-chart-line"></i> System Analytics
-  </a>
-  <a href="/incidents/" class="list-group-item list-group-item-action">
-    <i class="fas fa-list"></i> All Incidents
-  </a>
-{% endif %}
-
-
-        <a href="/logout/" class="list-group-item list-group-item-action">Logout</a>
-      {% endif %}
+  <!-- Profile Section -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card shadow-lg border-0 rounded-3">
+      <div class="card-header bg-blue-header text-center py-4">
+  <!-- Avatar with initials -->
+  <div class="d-flex justify-content-center mb-3">
+    <div class="rounded-circle bg-white text-primary fw-bold d-flex align-items-center justify-content-center"
+         style="width: 80px; height: 80px; font-size: 28px;">
+      {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}
     </div>
   </div>
-  <!-- /#sidebar-wrapper -->
 
-  <!-- Page Content -->
-  <div id="page-content-wrapper">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-      <button class="btn btn-primary" id="menu-toggle">Toggle Sidebar</button>
-    </nav>
+  <!-- Full Name -->
+  <h2 class="fw-bold mb-1 text-white">
+    <i class="fas fa-user-circle me-2"></i> {{ user.first_name }} {{ user.last_name }}
+  </h2>
 
-    <!-- Profile Section -->
-    <div class="col-md-12">
-      <div class="card profile-card">
-        <div class="profile-card-header">
-          <h4>Your Profile</h4>
-          <p>{{ user.username }} | {{ user.email }}</p>
-          {% if user.is_superuser %}
-            <p><i class="fas fa-user-shield"></i> Role: Admin (Superuser)</p>
-          {% else %}
-            <p><i class="fas fa-user-tag"></i> Role: {{ role }}</p>
-          {% endif %}
-        </div>
-        <div class="profile-card-body">
+  <!-- Username and Email -->
+  <p class="mb-1 fs-5 text-white">{{ user.username }} | {{ user.email }}</p>
 
-{% if messages %}
-  {% for message in messages %}
-    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-      {{ message }}
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
+  <!-- Role Badge -->
+  {% if user.is_superuser %}
+    <span class="badge bg-danger mt-2 px-3 py-2">
+      <i class="fas fa-user-shield"></i> Admin (Superuser)
+    </span>
+  {% else %}
+    <span class="badge bg-success mt-2 px-3 py-2">
+      <i class="fas fa-user-tag"></i> Role: {{ role }}
+    </span>
+  {% endif %}
+</div>
+{% if user.is_superuser %}
+<div class="row mt-4">
+  <div class="col-md-12">
+    <div class="card shadow border-0 rounded-3">
+      <div class="card-header bg-dark text-white">
+        <h5 class="fw-bold mb-0"><i class="fas fa-cogs"></i> Administration</h5>
+      </div>
+      <div class="card-body text-center">
+        <a href="/admin/" class="btn btn-primary btn-lg">
+          <i class="fas fa-tools"></i> Go to Django Admin Portal
+        </a>
+      </div>
     </div>
-  {% endfor %}
+  </div>
+</div>
 {% endif %}
 
 
-          <form method="post">
+
+
+        <div class="card-body p-4">
+
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+
+          <form method="post" class="mt-3">
             {% csrf_token %}
-            {{ p_form|crispy }}
-            <div class="form-row">
+            <div class="mb-3">
+              {{ p_form|crispy }}
+            </div>
+            <div class="mb-3">
               {{ profile_update_form|crispy }}
             </div>
-            <button type="submit" class="btn btn-update mt-3">
+            <button type="submit" class="btn btn-danger w-100 fw-bold">
               <i class="fas fa-save"></i> Update Profile
             </button>
           </form>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Incident Analytics Section -->
-    {% if user.profile.role in 'chief admin' %}
-    <div class="col-md-12 mt-4">
-      <div class="card">
-        <div class="card-header bg-primary text-white">
-          <h5><i class="fas fa-chart-pie"></i> Incident Analytics</h5>
+  <!-- Resident Incident Feedback Section -->
+  {% if user.profile.role == 'resident' %}
+  <div class="row mt-5">
+    <div class="col-md-12">
+      <div class="card shadow border-0 rounded-3">
+        <div class="card-header bg-gradient-info text-white">
+          <h5 class="fw-bold mb-0"><i class="fas fa-comments"></i> Officer Responses to Your Incidents</h5>
+        </div>
+        <div class="card-body">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Officer Response</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for incident in incidents %}
+                <tr>
+                  <td><span class="badge bg-secondary">{{ incident.id }}</span></td>
+                  <td>{{ incident.title }}</td>
+                  <td>
+                    <span class="badge
+                      {% if incident.status == 'pending' %} bg-warning text-dark
+                      {% elif incident.status == 'confirmed' %} bg-info
+                      {% elif incident.status == 'resolved' %} bg-success
+                      {% else %} bg-secondary {% endif %}">
+                      {{ incident.get_status_display }}
+                    </span>
+                  </td>
+                  <td>
+                    {% if incident.status == 'confirmed' or incident.status == 'resolved' %}
+                      {% if incident.response_notes %}
+                        <div class="alert alert-info p-2 mb-0">
+                          <strong>{{ incident.confirmed_by.first_name }}:</strong> {{ incident.response_notes }}
+                        </div>
+                      {% else %}
+                        <span class="text-muted">No response note</span>
+                      {% endif %}
+                    {% else %}
+                      <span class="text-muted">Awaiting officer response</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="4" class="text-center text-muted">You have no incidents yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Incident Analytics Section -->
+  {% if user.profile.role in 'chief admin' %}
+  <div class="row mt-5">
+    <div class="col-md-12">
+      <div class="card shadow border-0 rounded-3">
+        <div class="card-header bg-gradient-primary text-white">
+          <h5 class="fw-bold mb-0"><i class="fas fa-chart-pie"></i> Incident Analytics</h5>
         </div>
         <div class="card-body">
           <div class="row">
@@ -220,14 +175,14 @@
         </div>
       </div>
     </div>
-    {% endif %}
   </div>
+  {% endif %}
+
 </div>
 
 <!-- Chart.js Script -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  // Status (Pie)
   const incidentStatusData = {
     labels: ['Pending', 'In Progress', 'Resolved'],
     datasets: [{
@@ -248,7 +203,6 @@
     });
   }
 
-  // Categories (Bar)
   const incidentCategoryData = {
     labels: ['Suspicious Activity', 'Emergency', 'Disturbance', 'Other'],
     datasets: [{
@@ -282,16 +236,6 @@
           }
         }
       }
-    });
-  }
-
-  // Sidebar toggle
-  const toggleBtn = document.getElementById('menu-toggle');
-  if (toggleBtn) {
-    toggleBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      const wrapper = document.getElementById('wrapper');
-      if (wrapper) wrapper.classList.toggle('toggled');
     });
   }
 </script>

@@ -130,12 +130,20 @@ def dashboard(request):
         p_form = ProfileUpdateForm(instance=request.user)
         profile_update_form = UserProfileUpdateForm(instance=profile, user=request.user)
 
+    # ✅ NEW: add incidents for residents
+    if request.user.profile.role == 'resident':
+        incidents = Incident.objects.filter(reporter=request.user)
+    else:
+        incidents = Incident.objects.none()
+
     context = {
         'p_form': p_form,
         'profile_update_form': profile_update_form,
-        'role': profile.role  # pass role to template for conditional rendering
+        'role': profile.role,   # existing
+        'incidents': incidents  # new
     }
     return render(request, 'UlinziTracker/dashboard.html', context)
+
 
 # --- Incident submission ---
 @login_required
@@ -186,12 +194,13 @@ def allincidents(request):
         return redirect('UlinziTracker:incident_list')
     return render(request, 'UlinziTracker/AllIncidents.html', {'c': incidents})
 
-def pdf_view(request):
+@login_required
+def pdf_view(request, incident_id):
+    incident = get_object_or_404(Incident, id=incident_id)
+
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename=incident_id.pdf'
+    response['Content-Disposition'] = f'attachment; filename=incident_{incident.id}.pdf'
     p = canvas.Canvas(response, pagesize=A4)
-    cid = request.POST.get('cid')
-    incident = get_object_or_404(Incident, id=cid)
 
     p.drawString(25, 770, "Incident Report")
     p.drawString(30, 750, f"Reporter: {incident.reporter.username}")
@@ -204,6 +213,7 @@ def pdf_view(request):
     p.showPage()
     p.save()
     return response
+
 
 @login_required
 def pending_incidents(request):
@@ -243,7 +253,9 @@ def edit_incident(request, id):
 @login_required
 def update_status(request, id):
     incident = get_object_or_404(Incident, id=id)
-    if request.user != incident.reporter and not request.user.is_superuser:
+
+    # Allow superuser, admin, or officer
+    if not (request.user.is_superuser or request.user.profile.role in ['admin', 'officer']):
         messages.error(request, "You are not authorized to update this incident.")
         return redirect('UlinziTracker:incident_list')
 
@@ -251,10 +263,16 @@ def update_status(request, id):
         form = StatusUpdateForm(request.POST, instance=incident)
         if form.is_valid():
             form.save()
-            messages.success(request, "Status updated.")
-    return redirect('UlinziTracker:incident_list')
+            messages.success(request, "Status updated successfully.")
+            return redirect('UlinziTracker:incident_list')
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = StatusUpdateForm(instance=incident)
 
-@login_required
+    return render(request, 'UlinziTracker/update_status.html', {'form': form, 'incident': incident})
+
+
 @login_required
 def delete_incident(request, id):
     incident = get_object_or_404(Incident, id=id)
@@ -323,3 +341,19 @@ def confirm_incident(request, incident_id):
         return redirect('UlinziTracker:pending_incidents')
 
     return render(request, 'UlinziTracker/confirm_incident.html', {'incident': incident})
+
+@login_required
+def resolve_incident(request, incident_id):
+    incident = get_object_or_404(Incident, id=incident_id)
+
+    # Only officers can resolve
+    if request.user.profile.role != 'officer':
+        messages.error(request, "Only officers can resolve incidents.")
+        return redirect('UlinziTracker:pending_incidents')
+
+    # Mark as resolved
+    incident.status = 'resolved'
+    incident.save()
+
+    messages.success(request, f"Incident {incident.id} has been marked as resolved.")
+    return redirect('UlinziTracker:solved_incidents')

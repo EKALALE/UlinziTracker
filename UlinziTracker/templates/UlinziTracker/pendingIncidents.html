@@ -102,13 +102,13 @@
                     <td>{{ incident.get_category_display }}</td>
                     <td>{{ incident.time_reported }}</td>
                     <td>
-                      <form method="POST" action="/pdf/">
-                        {% csrf_token %}
-                        <input type="hidden" name="cid" value="{{ incident.id }}">
-                        <button type="submit" class="btn btn-info btn-sm">
-                          <i class="fas fa-file-pdf"></i> Details
-                        </button>
-                      </form>
+
+                        <a href="{% url 'UlinziTracker:pdf_view' incident.id %}" class="btn btn-sm btn-outline-primary">
+                          <i class="fas fa-file-pdf me-1"></i> PDF
+                        </a>
+                       </td>
+
+
                     </td>
                     <td class="{{ incident.status }}">{{ incident.get_status_display }}</td>
                     {% if user.profile.role in 'officer chief admin' %}

@@ -88,6 +88,7 @@
                   <th>Reported At</th>
                   <th>Details</th>
                   <th>Status</th>
+                  <th>Officer Response</th> <!-- NEW COLUMN -->
                   {% if user.profile.role in 'officer chief admin' %}
                     <th>Actions</th>
                   {% endif %}
@@ -95,37 +96,43 @@
               </thead>
               <tbody>
                 {% for incident in result %}
-                  <tr>
-                    <td class="counterCell"></td>
-                    <td>{{ incident.reporter.username }}</td>
-                    <td>{{ incident.title }}</td>
-                    <td>{{ incident.get_category_display }}</td>
-                    <td>{{ incident.time_reported }}</td>
-                    <td>
-                      <form method="POST" action="/pdf/">
-                        {% csrf_token %}
-                        <input type="hidden" name="cid" value="{{ incident.id }}">
-                        <button type="submit" class="btn btn-info btn-sm">
-                          <i class="fas fa-file-pdf"></i> Details
-                        </button>
-                      </form>
-                    </td>
-                    <td class="{{ incident.status }}">{{ incident.get_status_display }}</td>
-                    {% if user.profile.role in 'officer chief admin' %}
-                      <td>
-                        <form method="POST">
-                          {% csrf_token %}
-                          {{ forms|crispy }}
-                          <input type="hidden" name="cid2" value="{{ incident.id }}">
-                          <button type="submit" class="btn btn-success btn-sm">
-                            <i class="fas fa-save"></i> Update
-                          </button>
-                        </form>
-                      </td>
-                    {% endif %}
-                  </tr>
+                 <tr>
+  <td class="counterCell"></td>
+  <td>{{ incident.reporter.username }}</td>
+  <td>{{ incident.title }}</td>
+  <td>{{ incident.get_category_display }}</td>
+  <td>{{ incident.time_reported }}</td>
+  <td>
+    <a href="{% url 'UlinziTracker:pdf_view' incident.id %}" class="btn btn-info btn-sm">
+      <i class="fas fa-file-pdf"></i> Details
+    </a>
+  </td>
+  <td class="{{ incident.status }}">{{ incident.get_status_display }}</td>
+  <td>
+    {% if incident.response_notes %}
+      <div class="alert alert-success p-2 mb-0">
+        <strong>{{ incident.confirmed_by.first_name }}:</strong> {{ incident.response_notes }}
+      </div>
+    {% else %}
+      <span class="text-muted">No officer response</span>
+    {% endif %}
+  </td>
+  {% if user.profile.role in 'officer chief admin' %}
+    <td>
+      <form method="POST">
+        {% csrf_token %}
+        {{ forms|crispy }}
+        <input type="hidden" name="cid2" value="{{ incident.id }}">
+        <button type="submit" class="btn btn-success btn-sm">
+          <i class="fas fa-save"></i> Update
+        </button>
+      </form>
+    </td>
+  {% endif %}
+</tr>
+
                 {% empty %}
-                  <tr><td colspan="8">No resolved incidents found.</td></tr>
+                  <tr><td colspan="9">No resolved incidents found.</td></tr>
                 {% endfor %}
               </tbody>
             </table>

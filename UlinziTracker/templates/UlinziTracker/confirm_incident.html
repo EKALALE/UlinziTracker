@@ -2,9 +2,15 @@
 {% block content %}
 <div class="container mt-4">
   <h3>Respond to Incident #{{ incident.id }}</h3>
-  <p><strong>Reported by:</strong> {{ incident.user.username }}</p>
+  <p><strong>Reported by:</strong> {{ incident.reporter.username }}</p>
   <p><strong>Title:</strong> {{ incident.title }}</p>
   <p><strong>Description:</strong> {{ incident.description }}</p>
+
+  {% if incident.response_notes %}
+    <div class="alert alert-info mt-3">
+      <strong>Existing Response:</strong> {{ incident.response_notes }}
+    </div>
+  {% endif %}
 
   <form method="post">
     {% csrf_token %}

@@ -24,18 +24,25 @@ urlpatterns = [
     path('incident-list/', views.incident_list, name='incident_list'),
     path('allincidents/', views.allincidents, name='allincidents'),
     path('incidents/resolved/', views.solved_incidents, name='resolved_incidents'),
+
     path('incidentStats/', views.incidentStats, name='incidentStats'),
     path('incidents/pending/', views.pending_incidents, name='pending_incidents'),
     path('incidents/<int:incident_id>/confirm/', views.confirm_incident, name='confirm_incident'),
-
-
+           # officers actions
+    path("incidents/<int:incident_id>/confirm/", views.confirm_incident, name="confirm_incident"),
+    path("incidents/<int:incident_id>/resolve/", views.resolve_incident, name="resolve_incident"),
     # Incident actions
     path('incidents/edit/<int:id>/', views.edit_incident, name='edit_incident'),
     path('incidents/update/<int:id>/', views.update_status, name='update_status'),
     path('incidents/delete/<int:id>/', views.delete_incident, name='delete_incident'),
 
+     # Incident update route
+    path("incidents/update/<int:id>/", views.update_status, name="update_status"),
+
+
     # PDF export
-    path('pdf/', views.pdf_view, name='pdf_view'),
+    path("pdf/<int:incident_id>/", views.pdf_view, name="pdf_view"),
+    path("pdf_g/<int:incident_id>/", views.pdf_view, name="pdf_g"),
 
     # Password reset flow
     path('password-reset/',

@@ -109,13 +109,12 @@
         </div>
     </nav>
 
+{% block content %}{% endblock %}
 
-    {% block content %}
-    {% endblock content %}
-
-    <div class="push"></div>
-    <footer class="bg-dark text-light" style="height:50px;">
-        <center> &copy; UlinziTracker - Enhancing Community Safety</center>
-    </footer>
+  {% block footer %}
+  <footer class="bg-dark text-white text-center py-3">
+    <small>&copy; {{ year }} UlinziTracker - Community Safety Platform</small>
+  </footer>
+  {% endblock %}
 </body>
 </html>

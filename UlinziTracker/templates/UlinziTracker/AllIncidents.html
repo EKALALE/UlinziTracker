@@ -140,55 +140,75 @@
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                {% for data in c %}
-                  <tr>
-                    <td class="counterCell"></td>
-                    <td>usr{{ data.reporter.id }}</td>
-                    <td>{{ data.title }}</td>
-                    <td>{{ data.get_category_display }}</td>
-                    <td>{{ data.time_reported }}</td>
-                    <td>
-                      <form method="POST" action="/pdf_g/">
-                        {% csrf_token %}
-                        <input type="hidden" name="cid" value="{{ data.id }}">
-                        <input type="hidden" name="uid" value="{{ data.reporter_id }}">
-                        <button type="submit" class="btn btn-info btn-sm">
-                          <i class="fas fa-file-pdf"></i> Details
-                        </button>
-                      </form>
-                    </td>
-                    <!-- Status cell styled by CSS -->
-                    <td class="{{ data.status }}">{{ data.get_status_display }}</td>
-                    <td>
-                      {% if user == data.reporter or user.is_superuser %}
-                        <!-- Edit -->
-                        <a href="{% url 'UlinziTracker:edit_incident' data.id %}" class="btn btn-warning btn-sm mb-1">
-                          <i class="fas fa-edit"></i> Edit
-                        </a>
 
-                        <!-- Update Status -->
-                        <a href="{% url 'UlinziTracker:update_status' data.id %}" class="btn btn-success btn-sm mb-1">
-                          <i class="fas fa-sync-alt"></i> Update
-                        </a>
+<tbody>
+  {% for data in c %}
+    <tr>
+      <td class="counterCell"></td>
+      <td>usr{{ data.reporter.id }}</td>
+      <td>{{ data.title }}</td>
+      <td>{{ data.get_category_display }}</td>
+      <td>{{ data.time_reported }}</td>
+      <td>
+        <a href="{% url 'UlinziTracker:pdf_view' data.id %}" class="btn btn-info btn-sm">
+          <i class="fas fa-file-pdf"></i> Details
+        </a>
 
-                        <!-- Delete -->
-                        <a href="{% url 'UlinziTracker:delete_incident' data.id %}" class="btn btn-danger btn-sm">
-                          <i class="fas fa-trash-alt"></i> Delete
-                        </a>
+      </td>
 
-                      {% elif user.profile.role == 'officer' and data.status == 'pending' %}
-                        <!-- Officer Respond -->
-                        <a href="{% url 'UlinziTracker:confirm_incident' data.id %}" class="btn btn-sm btn-success">
-                          <i class="fas fa-comment-dots"></i> Respond
-                        </a>
-                      {% else %}
-                        <span class="text-muted">No actions</span>
-                      {% endif %}
-                    </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
+      <!-- Status cell styled by CSS -->
+      <td class="{{ data.status }}">{{ data.get_status_display }}</td>
+      <td>
+        {% if user == data.reporter %}
+          <!-- Resident Actions -->
+          <a href="{% url 'UlinziTracker:edit_incident' data.id %}" class="btn btn-warning btn-sm mb-1">
+            <i class="fas fa-edit"></i> Edit
+          </a>
+          <a href="{% url 'UlinziTracker:delete_incident' data.id %}" class="btn btn-danger btn-sm">
+            <i class="fas fa-trash-alt"></i> Delete
+          </a>
+
+        {% elif user.is_superuser or user.profile.role == 'admin' %}
+          <!-- Admin can do everything -->
+          <a href="{% url 'UlinziTracker:edit_incident' data.id %}" class="btn btn-warning btn-sm mb-1">
+            <i class="fas fa-edit"></i> Edit
+          </a>
+          <a href="{% url 'UlinziTracker:update_status' data.id %}" class="btn btn-success btn-sm mb-1">
+            <i class="fas fa-sync-alt"></i> Update
+          </a>
+          <a href="{% url 'UlinziTracker:delete_incident' data.id %}" class="btn btn-danger btn-sm">
+            <i class="fas fa-trash-alt"></i> Delete
+          </a>
+
+        {% elif user.profile.role == 'officer' %}
+          {% if data.status == 'pending' %}
+            <!-- Officer Respond -->
+            <a href="{% url 'UlinziTracker:confirm_incident' data.id %}" class="btn btn-sm btn-success mb-1">
+              <i class="fas fa-comment-dots"></i> Respond
+            </a>
+            <!-- Officer can also update response -->
+            <a href="{% url 'UlinziTracker:update_status' data.id %}" class="btn btn-sm btn-outline-warning mb-1">
+              <i class="fas fa-sync-alt"></i> Update Response
+            </a>
+
+          {% elif data.status == 'confirmed' %}
+            <!-- Officer Resolve -->
+            <a href="{% url 'UlinziTracker:resolve_incident' data.id %}" class="btn btn-sm btn-primary mb-1">
+              <i class="fas fa-check-circle"></i> Resolve
+            </a>
+            <!-- Officer can still update response -->
+            <a href="{% url 'UlinziTracker:update_status' data.id %}" class="btn btn-sm btn-outline-warning mb-1">
+              <i class="fas fa-sync-alt"></i> Update Response
+            </a>
+          {% endif %}
+        {% else %}
+          <span class="text-muted">No actions</span>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+</tbody>
+
             </table>
           </div>
 
