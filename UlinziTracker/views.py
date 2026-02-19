@@ -235,7 +235,14 @@ def logout_view(request):
 @login_required
 def edit_incident(request, id):
     incident = get_object_or_404(Incident, id=id)
-    if request.user != incident.reporter and not request.user.is_superuser:
+
+    # Residents: only edit if pending
+    if request.user == incident.reporter and incident.status != 'pending':
+        messages.error(request, "You can only edit pending incidents.")
+        return redirect('UlinziTracker:incident_list')
+
+    # Non-reporters: only superuser/admin can edit
+    if request.user != incident.reporter and not request.user.is_superuser and request.user.profile.role != 'admin':
         messages.error(request, "You are not authorized to edit this incident.")
         return redirect('UlinziTracker:incident_list')
 
@@ -249,6 +256,7 @@ def edit_incident(request, id):
         form = IncidentForm(instance=incident)
 
     return render(request, 'UlinziTracker/edit_incident.html', {'form': form})
+
 
 @login_required
 def update_status(request, id):
@@ -277,8 +285,13 @@ def update_status(request, id):
 def delete_incident(request, id):
     incident = get_object_or_404(Incident, id=id)
 
-    # Only reporter or superuser can delete
-    if request.user != incident.reporter and not request.user.is_superuser:
+    # Residents: only delete if pending
+    if request.user == incident.reporter and incident.status != 'pending':
+        messages.error(request, "You can only delete pending incidents.")
+        return redirect('UlinziTracker:incident_list')
+
+    # Non-reporters: only superuser/admin can delete
+    if request.user != incident.reporter and not request.user.is_superuser and request.user.profile.role != 'admin':
         messages.error(request, "You are not authorized to delete this incident.")
         return redirect('UlinziTracker:incident_list')
 
@@ -287,7 +300,6 @@ def delete_incident(request, id):
         messages.success(request, "Incident deleted successfully.")
         return redirect('UlinziTracker:incident_list')
 
-    # Render confirmation page
     return render(request, 'UlinziTracker/delete_incident.html', {'incident': incident})
 
 def redirect_after_login(user):
